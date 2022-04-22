@@ -59,4 +59,8 @@ public class FileBlock {
     public int getFileBlockNumber() {
         return this.blockNumber;
     }
+
+    public boolean deleteFileBlock() {
+        return this.fileBlock.delete();
+    }
 }

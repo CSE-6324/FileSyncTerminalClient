@@ -48,4 +48,17 @@ public class FileToSync {
     public ArrayList<FileBlock> getFileBlockList() {
         return this.fileBlockList;
     }
+
+    public Message deleteAllFileBlocks() {
+        final String METHOD_NAME = "deleteAllFileBlocks";
+        Message returnMsg = new Message("", true);
+        for (FileBlock fb: this.fileBlockList) {
+            if (!fb.deleteFileBlock()) {
+                returnMsg.setMessageSuccess(false);
+                returnMsg.setMessage(TAG, METHOD_NAME, "Unable to delete file block: " + fb.getFileBlockName());
+                break;
+            }
+        }
+        return returnMsg;
+    }
 }
