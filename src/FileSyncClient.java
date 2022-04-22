@@ -16,19 +16,19 @@ public class FileSyncClient {
 //        }
 //        SyncClient syncClient = new SyncClient(args[0], args[1], Integer.parseInt(args[2]));
 
-        FSFile macFiles = new FSFile();
-        ArrayList<File> fileList = macFiles.getMacFiles();
-        ArrayList<File> fileBlockList = new ArrayList<>();
-        Message returnMsg = macFiles.getFileBlocks(fileList.get(0), fileBlockList);
-
-        System.out.println(returnMsg.isMessageSuccess());
-        for (File f: fileBlockList) {
-            StringBuilder checkSum = new StringBuilder();
-            returnMsg = macFiles.getCheckSum(f, checkSum);
-            System.out.println("Checksum: " + checkSum.toString());
-            System.out.println(macFiles.getFileInfo(f));
-
-        }
+//        FileToSync macFiles = new FileToSync();
+//        ArrayList<File> fileList = macFiles.getMacFiles();
+//        ArrayList<File> fileBlockList = new ArrayList<>();
+////        Message returnMsg = macFiles.getFileBlocks(fileList.get(0), fileBlockList);
+//
+//        System.out.println(returnMsg.isMessageSuccess());
+//        for (File f: fileBlockList) {
+//            StringBuilder checkSum = new StringBuilder();
+////            returnMsg = macFiles.getCheckSum(f, checkSum);
+//            System.out.println("Checksum: " + checkSum.toString());
+//            System.out.println(macFiles.getFileInfo(f));
+//
+//        }
 
     }
 }
