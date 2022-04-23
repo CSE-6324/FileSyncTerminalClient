@@ -78,4 +78,14 @@ public class FileUtility {
         }
         return returnMsg;
     }
+
+    public static ArrayList<File> getServerFiles() {
+        ArrayList<File> fileList = new ArrayList<>();
+        File serverFolder = new File(FOLDER_PATH_SERVER);
+        for (File f: serverFolder.listFiles()) {
+            if (!f.getName().startsWith("."))
+                fileList.add(f);
+        }
+        return fileList;
+    }
 }
