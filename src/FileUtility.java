@@ -13,7 +13,7 @@ public class FileUtility {
     public static final String FOLDER_PATH_SERVER = PROJECT_FILE_PATH + "server_files/";
     public static final int FILE_BLOCK_SIZE_4_MB = 1024 * 1024 * 4;
 
-    private static ArrayList<File> getFiles(File fileFolder) {
+    private static ArrayList<File> getClientFiles(File fileFolder) {
         ArrayList<File> fileList = new ArrayList<>();
         for (File f: fileFolder.listFiles()) {
             if (!f.getName().startsWith("."))
@@ -24,12 +24,12 @@ public class FileUtility {
 
     public static ArrayList<File> getMacFiles() {
         File macFolder = new File(FOLDER_PATH_MAC);
-        return getFiles(macFolder);
+        return getClientFiles(macFolder);
     }
 
     public static ArrayList<File> getWindowsFiles() {
         File winFolder = new File(FOLDER_PATH_WIN);
-        return getFiles(winFolder);
+        return getClientFiles(winFolder);
     }
 
     public static String getFileInfo(File f) {

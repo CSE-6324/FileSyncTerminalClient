@@ -57,6 +57,6 @@ public class Message {
     }
 
     public void setMessage(String className, String methodName, String msg) {
-        this.msg = className + "@ " + methodName +": " + msg;
+        this.msg = className + " @ " + methodName +": " + msg;
     }
 }
