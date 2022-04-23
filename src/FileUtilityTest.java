@@ -44,11 +44,16 @@ public class FileUtilityTest {
     }
 
     @org.junit.Test
-    public void getServerFiles() {
-        ArrayList<File> serverFiles = FileUtility.getServerFiles();
-        for (File f: serverFiles) {
-            System.out.println(f.getName());
-        }
+    public void getServerFileNameList() {
+        // I only have one file here for testing for now.
+        // Need to change this if more files are added.
+        ArrayList<String> serverFiles = FileUtility.getServerFileNameList();
+//        for (String fileName: serverFiles) {
+//            System.out.println(fileName);
+//        }
+        String expectedName = "milkyway.jpeg";
+        String actualName = serverFiles.get(0);
+        assertEquals(true, expectedName.equals(actualName));
     }
 
     @Test
