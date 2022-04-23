@@ -1,3 +1,5 @@
+import org.junit.Test;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -43,5 +45,17 @@ public class FileUtilityTest {
 
     @org.junit.Test
     public void getServerFiles() {
+        ArrayList<File> serverFiles = FileUtility.getServerFiles();
+        for (File f: serverFiles) {
+            System.out.println(f.getName());
+        }
+    }
+
+    @Test
+    public void getFileNameFromFileBlockName() {
+        String fileBlockName = "milkyway_001.jpeg";
+        String expectedName = "milkyway.jpeg";
+        String actualName = FileUtility.getFileNameFromFileBlockName(fileBlockName);
+        assertEquals(true, expectedName.equals(actualName));
     }
 }
