@@ -63,4 +63,30 @@ public class FileUtilityTest {
         String actualName = FileUtility.getFileNameFromFileBlockName(fileBlockName);
         assertEquals(true, expectedName.equals(actualName));
     }
+
+    @Test
+    public void getMacClientFileNameList() {
+        // I only have one file here for testing for now.
+        // Need to change this if more files are added.
+        ArrayList<String> fileNameList = FileUtility.getMacClientFileNameList();
+        String expectedName = "milkyway.jpeg";
+        for (String fileName: fileNameList) {
+            System.out.println(fileName);
+        }
+        String actualName = fileNameList.get(0);
+        assertEquals(true, expectedName.equals(actualName));
+    }
+
+    @Test
+    public void getWindowsClientFileNameList() {
+        // I only have one file here for testing for now.
+        // Need to change this if more files are added.
+        ArrayList<String> fileNameList = FileUtility.getWindowsClientFileNameList();
+        for (String fileName: fileNameList) {
+            System.out.println(fileName);
+        }
+        String expectedName = "alpine.jpeg";
+        String actualName = fileNameList.get(0);
+        assertEquals(true, expectedName.equals(actualName));
+    }
 }

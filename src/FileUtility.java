@@ -105,4 +105,22 @@ public class FileUtility {
         fileName = fileNameTokens[0] + "." + fileExt;
         return fileName;
     }
+
+    public static ArrayList<String> getMacClientFileNameList() {
+        ArrayList<String> nameList = new ArrayList<>();
+        ArrayList<File> macFiles = getMacFiles();
+        for (File f: macFiles) {
+            nameList.add(f.getName());
+        }
+        return nameList;
+    }
+
+    public static ArrayList<String> getWindowsClientFileNameList() {
+        ArrayList<String> nameList = new ArrayList<>();
+        ArrayList<File> winFiles = getWindowsFiles();
+        for (File f: winFiles) {
+            nameList.add(f.getName());
+        }
+        return nameList;
+    }
 }
