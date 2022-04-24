@@ -157,4 +157,8 @@ public class FileUtility {
     public static ArrayList<String> getMacFileNamesToDownload() {
         return getFilesToDownloadByClientFileList(getMacClientFileNameList());
     }
+
+    public static ArrayList<String> getWindowsFileNamesToDownload() {
+        return getFilesToDownloadByClientFileList(getWindowsClientFileNameList());
+    }
 }

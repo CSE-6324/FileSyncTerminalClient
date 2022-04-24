@@ -151,4 +151,12 @@ public class FileUtilityTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getWindowsFileNamesToDownload() {
+        ArrayList<String> filesToDownload = FileUtility.getWindowsFileNamesToDownload();
+        for (String fileName: filesToDownload) {
+            System.out.println(fileName);
+        }
+    }
 }
