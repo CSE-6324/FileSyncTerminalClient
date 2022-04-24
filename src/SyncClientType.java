@@ -6,8 +6,8 @@ public enum SyncClientType {
     WINDOWS ("windows", "/Users/sudiptasharif/repos/FileSyncer/project_files/win_files/"),
     UNKNOWN ("unknown", "");
 
-    private final String clientName;
-    private final String localFilePath;
+    private String clientName;
+    private String localFilePath;
 
     SyncClientType (String clientName, String localFilePath) {
         this.clientName = clientName;
@@ -81,5 +81,17 @@ public enum SyncClientType {
 
     public ArrayList<String> getFileNamesToUpload() {
         return getNotsyncedFilesByClient();
+    }
+
+    public ArrayList<String> getFilesToDownload() {
+        ArrayList<String> currentServerFileList = FileUtility.getServerFileNameList();
+        ArrayList<String> localFileList = getLocalFileNames();
+        ArrayList<String> filesToDownload = new ArrayList<>();
+        for (String serverFileName: currentServerFileList) {
+            if (!localFileList.contains(serverFileName)) {
+                filesToDownload.add(serverFileName);
+            }
+        }
+        return filesToDownload;
     }
 }

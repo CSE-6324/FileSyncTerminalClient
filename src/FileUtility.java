@@ -77,23 +77,4 @@ public class FileUtility {
         fileName = fileNameTokens[0] + "." + fileExt;
         return fileName;
     }
-
-    private static ArrayList<String> getFilesToDownloadByClientFileList(ArrayList<String> clientFileNameList) {
-        ArrayList<String> currentServerFileList = getServerFileNameList();
-        ArrayList<String> clientFileNamesToDownload = new ArrayList<>();
-        for (String serverFileName: currentServerFileList) {
-            if (!clientFileNameList.contains(serverFileName)) {
-                clientFileNamesToDownload.add(serverFileName);
-            }
-        }
-        return clientFileNamesToDownload;
-    }
-
-    public static ArrayList<String> getMacFileNamesToDownload() {
-        return getFilesToDownloadByClientFileList(SyncClientType.MAC.getLocalFileNames());
-    }
-
-    public static ArrayList<String> getWindowsFileNamesToDownload() {
-        return getFilesToDownloadByClientFileList(SyncClientType.WINDOWS.getLocalFileNames());
-    }
 }

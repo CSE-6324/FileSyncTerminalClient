@@ -123,4 +123,22 @@ public class SyncClientTypeTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getFilesToDownloadMac() {
+        System.out.println("getFilesToDownloadMac");
+        ArrayList<String> filesToDownload = SyncClientType.MAC.getFilesToDownload();
+        for (String fileName: filesToDownload) {
+            System.out.println(fileName);
+        }
+    }
+
+    @Test
+    public void getFilesToDownloadWindows() {
+        System.out.println("getFilesToDownloadWindows");
+        ArrayList<String> filesToDownload = SyncClientType.WINDOWS.getFilesToDownload();
+        for (String fileName: filesToDownload) {
+            System.out.println(fileName);
+        }
+    }
 }
