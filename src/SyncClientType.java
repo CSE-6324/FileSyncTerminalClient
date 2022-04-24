@@ -1,3 +1,6 @@
+import java.io.File;
+import java.util.ArrayList;
+
 public enum SyncClientType {
     MAC ("mac", "/Users/sudiptasharif/repos/FileSyncer/project_files/mac_files/"),
     WINDOWS ("windows", "/Users/sudiptasharif/repos/FileSyncer/project_files/win_files/"),
@@ -17,5 +20,24 @@ public enum SyncClientType {
 
     public String getLocalFilePath() {
         return this.localFilePath;
+    }
+
+    public ArrayList<File> getLocalFiles() {
+        File fileFolder = new File(this.localFilePath);
+        ArrayList<File> fileList = new ArrayList<>();
+        for (File f: fileFolder.listFiles()) {
+            if (!f.getName().startsWith("."))
+                fileList.add(f);
+        }
+        return fileList;
+    }
+
+    public ArrayList<String> getLocalFileNames() {
+        ArrayList<String> nameList = new ArrayList<>();
+        ArrayList<File> localFiles = getLocalFiles();
+        for (File f: localFiles) {
+            nameList.add(f.getName());
+        }
+        return nameList;
     }
 }

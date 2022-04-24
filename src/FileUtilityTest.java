@@ -17,7 +17,7 @@ public class FileUtilityTest {
 
     @org.junit.Test
     public void getMacFiles() {
-        ArrayList<File> files = FileUtility.getMacFiles();
+        ArrayList<File> files = SyncClientType.MAC.getLocalFiles();
         for (File f: files) {
             System.out.println(f.getName());
         }
@@ -25,7 +25,7 @@ public class FileUtilityTest {
 
     @org.junit.Test
     public void getWindowsFiles() {
-        ArrayList<File> files = FileUtility.getWindowsFiles();
+        ArrayList<File> files = SyncClientType.WINDOWS.getLocalFiles();
         for (File f: files) {
             System.out.println(f.getName());
         }
@@ -37,7 +37,7 @@ public class FileUtilityTest {
 
     @org.junit.Test
     public void getFileBlocks() {
-        ArrayList<File> macFiles = FileUtility.getMacFiles();
+        ArrayList<File> macFiles = SyncClientType.MAC.getLocalFiles();
         ArrayList<FileToSync> fileToSyncList = new ArrayList<>();
         Message returnMessage;
         for (File f: macFiles) {
@@ -102,7 +102,7 @@ public class FileUtilityTest {
     public void getMacClientFileNameList() {
         // I only have one file here for testing for now.
         // Need to change this if more files are added.
-        ArrayList<String> fileNameList = FileUtility.getMacClientFileNameList();
+        ArrayList<String> fileNameList = SyncClientType.MAC.getLocalFileNames();
         String expectedName = "milkyway.jpeg";
         for (String fileName: fileNameList) {
             System.out.println(fileName);
@@ -115,13 +115,10 @@ public class FileUtilityTest {
     public void getWindowsClientFileNameList() {
         // I only have one file here for testing for now.
         // Need to change this if more files are added.
-        ArrayList<String> fileNameList = FileUtility.getWindowsClientFileNameList();
+        ArrayList<String> fileNameList = SyncClientType.WINDOWS.getLocalFileNames();
         for (String fileName: fileNameList) {
             System.out.println(fileName);
         }
-        String expectedName = "alpine.jpeg";
-        String actualName = fileNameList.get(0);
-        assertEquals(true, expectedName.equals(actualName));
     }
 
     @Test

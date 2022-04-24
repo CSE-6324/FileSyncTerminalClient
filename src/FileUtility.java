@@ -11,32 +11,6 @@ public class FileUtility {
     public static final String FOLDER_PATH_SERVER = PROJECT_FILE_PATH + "server_files/";
     public static final int FILE_BLOCK_SIZE_4_MB = 1024 * 1024 * 4;
 
-    private static ArrayList<File> getClientFiles(File fileFolder) {
-        ArrayList<File> fileList = new ArrayList<>();
-        for (File f: fileFolder.listFiles()) {
-            if (!f.getName().startsWith("."))
-                fileList.add(f);
-        }
-        return fileList;
-    }
-
-    public static ArrayList<File> getMacFiles() {
-        File macFolder = new File(SyncClientType.MAC.getLocalFilePath());
-        return getClientFiles(macFolder);
-    }
-
-    public static ArrayList<File> getWindowsFiles() {
-        File winFolder = new File(SyncClientType.WINDOWS.getLocalFilePath());
-        return getClientFiles(winFolder);
-    }
-
-    public static String getFileInfo(File f) {
-        String fileInfo = "File Name: " + f.getName() + System.lineSeparator();
-        fileInfo += "File Length: " + f.length() + System.lineSeparator();
-        fileInfo += "File Last Modified: " + f.lastModified() + System.lineSeparator();
-        fileInfo += "---------------------";
-        return fileInfo;
-    }
 
     private static String getBlockName(String originalFileName, int blockNum) {
         String filePartName = "";
@@ -104,30 +78,12 @@ public class FileUtility {
         return fileName;
     }
 
-    public static ArrayList<String> getMacClientFileNameList() {
-        ArrayList<String> nameList = new ArrayList<>();
-        ArrayList<File> macFiles = getMacFiles();
-        for (File f: macFiles) {
-            nameList.add(f.getName());
-        }
-        return nameList;
-    }
-
-    public static ArrayList<String> getWindowsClientFileNameList() {
-        ArrayList<String> nameList = new ArrayList<>();
-        ArrayList<File> winFiles = getWindowsFiles();
-        for (File f: winFiles) {
-            nameList.add(f.getName());
-        }
-        return nameList;
-    }
-
     public static ArrayList<String> getMacFileNamesToUpload() {
-        return getNotsyncedFilesByClient(getMacClientFileNameList());
+        return getNotsyncedFilesByClient(SyncClientType.MAC.getLocalFileNames());
     }
 
     public static ArrayList<String> getWindowsFileNamesToUpload() {
-        return getNotsyncedFilesByClient(getWindowsClientFileNameList());
+        return getNotsyncedFilesByClient(SyncClientType.WINDOWS.getLocalFileNames());
     }
 
     private static ArrayList<String> getFilesToDownloadByClientFileList(ArrayList<String> clientFileNameList) {
@@ -142,11 +98,11 @@ public class FileUtility {
     }
 
     public static ArrayList<String> getMacFileNamesToDownload() {
-        return getFilesToDownloadByClientFileList(getMacClientFileNameList());
+        return getFilesToDownloadByClientFileList(SyncClientType.MAC.getLocalFileNames());
     }
 
     public static ArrayList<String> getWindowsFileNamesToDownload() {
-        return getFilesToDownloadByClientFileList(getWindowsClientFileNameList());
+        return getFilesToDownloadByClientFileList(SyncClientType.WINDOWS.getLocalFileNames());
     }
 
     private static ArrayList<String> getNotsyncedFilesByClient(ArrayList<String> clientFileNameList) {
@@ -161,17 +117,17 @@ public class FileUtility {
     }
 
     public static ArrayList<String> getMacFileNamesToDelete() {
-        return getClientFileNamesToDelete(getMacClientFileNameList(), getWindowsClientFileNameList());
+        return getClientFileNamesToDelete(SyncClientType.MAC.getLocalFileNames(), SyncClientType.WINDOWS.getLocalFileNames());
     }
 
     public static ArrayList<String> getWindowsFileNamesToDelete() {
-        return getClientFileNamesToDelete(getWindowsClientFileNameList(), getMacClientFileNameList());
+        return getClientFileNamesToDelete(SyncClientType.WINDOWS.getLocalFileNames(), SyncClientType.MAC.getLocalFileNames());
     }
 
     private static ArrayList<String> getClientFileNamesToDelete(ArrayList<String> targetClientFileNameList,
                                                                 ArrayList<String> otherClientFileNameList) {
         ArrayList<String> filesToDelete = new ArrayList<>();
-        // notSyncedFileNameList : these are the files that are in the mac files folder but not in the server
+        // notSyncedFileNameList : these are the files that are in the client file folder but not in the server
         ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient(targetClientFileNameList);
         ArrayList<String> currentOtherClientFileList = otherClientFileNameList;
         for (String fileName: notSyncedFileNameList) {
