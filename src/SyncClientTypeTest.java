@@ -60,13 +60,13 @@ public class SyncClientTypeTest {
 
     @Test
     public void getNotsyncedFilesByClient() {
-        ArrayList<String> fileNames = SyncClientType.MAC.getNotsyncedFilesByClient();
+        ArrayList<String> fileNames = SyncClientType.MAC.getNotSyncedFilesByClient();
         System.out.println("Mac Client Not Synced File List");
         for (String fileName: fileNames) {
             System.out.println(fileName);
         }
 
-        fileNames = SyncClientType.WINDOWS.getNotsyncedFilesByClient();
+        fileNames = SyncClientType.WINDOWS.getNotSyncedFilesByClient();
         System.out.println("Windows Client Not Synced File List");
         for (String fileName: fileNames) {
             System.out.println(fileName);
