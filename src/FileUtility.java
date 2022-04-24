@@ -126,10 +126,10 @@ public class FileUtility {
 
     public static ArrayList<String> getMacFileNamesToUpload() {
         ArrayList<String> currentMacFileNameList = getMacClientFileNameList();
-        ArrayList<String> currentWindowsFileNameList = getWindowsClientFileNameList();
+        ArrayList<String> currentServerFileList = getServerFileNameList();
         ArrayList<String> macFileNamesToUpload = new ArrayList<>();
         for (String macFileName: currentMacFileNameList) {
-            if (!currentWindowsFileNameList.contains(macFileName)) {
+            if (!currentServerFileList.contains(macFileName)) {
                 macFileNamesToUpload.add(macFileName);
             }
         }
