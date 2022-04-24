@@ -163,25 +163,21 @@ public class FileUtility {
     }
 
     public static ArrayList<String> getMacFileNamesToDelete() {
-        // notSyncedFileNameList : these are the files that are in the mac files folder but not in the server
-        ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient(getMacClientFileNameList());
-        ArrayList<String> currentWindowsClientFileList = getWindowsClientFileNameList();
-        ArrayList<String> filesToDelete = new ArrayList<>();
-        for (String fileName: notSyncedFileNameList) {
-            if (!currentWindowsClientFileList.contains(fileName)) {
-                filesToDelete.add(fileName);
-            }
-        }
-        return filesToDelete;
+        return getClientFileNamesToDelete(getMacClientFileNameList(), getWindowsClientFileNameList());
     }
 
     public static ArrayList<String> getWindowsFileNamesToDelete() {
-        // notSyncedFileNameList : these are the files that are in the mac files folder but not in the server
-        ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient(getWindowsClientFileNameList());
-        ArrayList<String> currentMacClientFileList = getMacClientFileNameList();
+        return getClientFileNamesToDelete(getWindowsClientFileNameList(), getMacClientFileNameList());
+    }
+
+    private static ArrayList<String> getClientFileNamesToDelete(ArrayList<String> targetClientFileNameList,
+                                                                ArrayList<String> otherClientFileNameList) {
         ArrayList<String> filesToDelete = new ArrayList<>();
+        // notSyncedFileNameList : these are the files that are in the mac files folder but not in the server
+        ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient(targetClientFileNameList);
+        ArrayList<String> currentOtherClientFileList = otherClientFileNameList;
         for (String fileName: notSyncedFileNameList) {
-            if (!currentMacClientFileList.contains(fileName)) {
+            if (!currentOtherClientFileList.contains(fileName)) {
                 filesToDelete.add(fileName);
             }
         }
