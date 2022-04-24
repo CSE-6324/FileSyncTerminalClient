@@ -125,22 +125,11 @@ public class FileUtility {
     }
 
     public static ArrayList<String> getMacFileNamesToUpload() {
-        return getFilesToUploadByClientFileList(getMacClientFileNameList());
-    }
-
-    private static ArrayList<String> getFilesToUploadByClientFileList(ArrayList<String> clientFileNameList) {
-        ArrayList<String> currentServerFileList = getServerFileNameList();
-        ArrayList<String> clientFileNamesToUpload = new ArrayList<>();
-        for (String clientFileName: clientFileNameList) {
-            if (!currentServerFileList.contains(clientFileName)) {
-                clientFileNamesToUpload.add(clientFileName);
-            }
-        }
-        return clientFileNamesToUpload;
+        return getNotsyncedFilesByClient(getMacClientFileNameList());
     }
 
     public static ArrayList<String> getWindowsFileNamesToUpload() {
-        return getFilesToUploadByClientFileList(getWindowsClientFileNameList());
+        return getNotsyncedFilesByClient(getWindowsClientFileNameList());
     }
 
     private static ArrayList<String> getFilesToDownloadByClientFileList(ArrayList<String> clientFileNameList) {
@@ -160,5 +149,16 @@ public class FileUtility {
 
     public static ArrayList<String> getWindowsFileNamesToDownload() {
         return getFilesToDownloadByClientFileList(getWindowsClientFileNameList());
+    }
+
+    private static ArrayList<String> getNotsyncedFilesByClient(ArrayList<String> clientFileNameList) {
+        ArrayList<String> currentServerFileList = getServerFileNameList();
+        ArrayList<String> deSyncedFileNameList = new ArrayList<>();
+        for (String clientFileName: clientFileNameList) {
+            if (!currentServerFileList.contains(clientFileName)) {
+                deSyncedFileNameList.add(clientFileName);
+            }
+        }
+        return deSyncedFileNameList;
     }
 }
