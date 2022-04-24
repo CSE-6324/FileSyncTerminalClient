@@ -143,4 +143,12 @@ public class FileUtilityTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getMacFileNamesToDownload() {
+        ArrayList<String> filesToDownload = FileUtility.getMacFileNamesToDownload();
+        for (String fileName: filesToDownload) {
+            System.out.println(fileName);
+        }
+    }
 }
