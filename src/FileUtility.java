@@ -125,14 +125,17 @@ public class FileUtility {
     }
 
     public static ArrayList<String> getMacFileNamesToUpload() {
-        ArrayList<String> currentMacFileNameList = getMacClientFileNameList();
+        return getFilesToUploadByClientFileList(getMacClientFileNameList());
+    }
+
+    private static ArrayList<String> getFilesToUploadByClientFileList(ArrayList<String> clientFileNameList) {
         ArrayList<String> currentServerFileList = getServerFileNameList();
-        ArrayList<String> macFileNamesToUpload = new ArrayList<>();
-        for (String macFileName: currentMacFileNameList) {
+        ArrayList<String> clientFileNamesToUpload = new ArrayList<>();
+        for (String macFileName: clientFileNameList) {
             if (!currentServerFileList.contains(macFileName)) {
-                macFileNamesToUpload.add(macFileName);
+                clientFileNamesToUpload.add(macFileName);
             }
         }
-        return macFileNamesToUpload;
+        return clientFileNamesToUpload;
     }
 }
