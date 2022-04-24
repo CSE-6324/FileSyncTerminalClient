@@ -17,4 +17,9 @@ public class SyncClientTypeTest {
         }
     }
 
+    @Test
+    public void getLocalFilePath() {
+        assertEquals(true, SyncClientType.MAC.getLocalFilePath().equals("/Users/sudiptasharif/repos/FileSyncer/project_files/mac_files/"));
+        assertEquals(true, SyncClientType.WINDOWS.getLocalFilePath().equals("/Users/sudiptasharif/repos/FileSyncer/project_files/win_files/"));
+    }
 }
