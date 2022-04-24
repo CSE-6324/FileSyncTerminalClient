@@ -78,14 +78,6 @@ public class FileUtility {
         return fileName;
     }
 
-    public static ArrayList<String> getMacFileNamesToUpload() {
-        return getNotsyncedFilesByClient(SyncClientType.MAC.getLocalFileNames());
-    }
-
-    public static ArrayList<String> getWindowsFileNamesToUpload() {
-        return getNotsyncedFilesByClient(SyncClientType.WINDOWS.getLocalFileNames());
-    }
-
     private static ArrayList<String> getFilesToDownloadByClientFileList(ArrayList<String> clientFileNameList) {
         ArrayList<String> currentServerFileList = getServerFileNameList();
         ArrayList<String> clientFileNamesToDownload = new ArrayList<>();
@@ -103,38 +95,5 @@ public class FileUtility {
 
     public static ArrayList<String> getWindowsFileNamesToDownload() {
         return getFilesToDownloadByClientFileList(SyncClientType.WINDOWS.getLocalFileNames());
-    }
-
-    private static ArrayList<String> getNotsyncedFilesByClient(ArrayList<String> clientFileNameList) {
-        ArrayList<String> currentServerFileList = getServerFileNameList();
-        ArrayList<String> notSyncedFileNameList = new ArrayList<>();
-        for (String clientFileName: clientFileNameList) {
-            if (!currentServerFileList.contains(clientFileName)) {
-                notSyncedFileNameList.add(clientFileName);
-            }
-        }
-        return notSyncedFileNameList;
-    }
-
-    public static ArrayList<String> getMacFileNamesToDelete() {
-        return getClientFileNamesToDelete(SyncClientType.MAC.getLocalFileNames(), SyncClientType.WINDOWS.getLocalFileNames());
-    }
-
-    public static ArrayList<String> getWindowsFileNamesToDelete() {
-        return getClientFileNamesToDelete(SyncClientType.WINDOWS.getLocalFileNames(), SyncClientType.MAC.getLocalFileNames());
-    }
-
-    private static ArrayList<String> getClientFileNamesToDelete(ArrayList<String> targetClientFileNameList,
-                                                                ArrayList<String> otherClientFileNameList) {
-        ArrayList<String> filesToDelete = new ArrayList<>();
-        // notSyncedFileNameList : these are the files that are in the client file folder but not in the server
-        ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient(targetClientFileNameList);
-        ArrayList<String> currentOtherClientFileList = otherClientFileNameList;
-        for (String fileName: notSyncedFileNameList) {
-            if (!currentOtherClientFileList.contains(fileName)) {
-                filesToDelete.add(fileName);
-            }
-        }
-        return filesToDelete;
     }
 }

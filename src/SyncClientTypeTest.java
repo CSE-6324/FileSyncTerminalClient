@@ -57,4 +57,70 @@ public class SyncClientTypeTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getNotsyncedFilesByClient() {
+        ArrayList<String> fileNames = SyncClientType.MAC.getNotsyncedFilesByClient();
+        System.out.println("Mac Client Not Synced File List");
+        for (String fileName: fileNames) {
+            System.out.println(fileName);
+        }
+
+        fileNames = SyncClientType.WINDOWS.getNotsyncedFilesByClient();
+        System.out.println("Windows Client Not Synced File List");
+        for (String fileName: fileNames) {
+            System.out.println(fileName);
+        }
+    }
+
+    @Test
+    public void getFileNamesToDeleteMac() {
+        System.out.println("getFileNamesToDeleteMac");
+        ArrayList<String> fileNames = SyncClientType.MAC.getFileNamesToDelete();
+        for (String fileName: fileNames) {
+            System.out.println(fileName);
+        }
+    }
+
+    @Test
+    public void getFileNamesToDeleteWindows() {
+        System.out.println("getFileNamesToDeleteWindows");
+        ArrayList<String> fileNames = SyncClientType.WINDOWS.getFileNamesToDelete();
+        for (String fileName: fileNames) {
+            System.out.println(fileName);
+        }
+    }
+
+    @Test
+    public void getOtherClientFileNames() {
+        ArrayList<String> otherClientFileNames = SyncClientType.MAC.getOtherClientFileNames();
+        System.out.println("When this client is mac");
+        for (String fileName: otherClientFileNames) {
+            System.out.println(fileName);
+        }
+
+        otherClientFileNames = SyncClientType.WINDOWS.getOtherClientFileNames();
+        System.out.println("When this client is windows");
+        for (String fileName: otherClientFileNames) {
+            System.out.println(fileName);
+        }
+    }
+
+    @Test
+    public void getFileNamesToUploadMac() {
+        System.out.println("getFileNamesToUploadMac");
+        ArrayList<String> fileNames = SyncClientType.MAC.getFileNamesToUpload();
+        for (String fileName: fileNames) {
+            System.out.println(fileName);
+        }
+    }
+
+    @Test
+    public void getFileNamesToUploadWindows() {
+        System.out.println("getFileNamesToUploadWindows");
+        ArrayList<String> fileNames = SyncClientType.WINDOWS.getFileNamesToUpload();
+        for (String fileName: fileNames) {
+            System.out.println(fileName);
+        }
+    }
 }

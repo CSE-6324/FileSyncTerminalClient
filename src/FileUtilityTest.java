@@ -16,22 +16,6 @@ public class FileUtilityTest {
     }
 
     @org.junit.Test
-    public void getMacFiles() {
-        ArrayList<File> files = SyncClientType.MAC.getLocalFiles();
-        for (File f: files) {
-            System.out.println(f.getName());
-        }
-    }
-
-    @org.junit.Test
-    public void getWindowsFiles() {
-        ArrayList<File> files = SyncClientType.WINDOWS.getLocalFiles();
-        for (File f: files) {
-            System.out.println(f.getName());
-        }
-    }
-
-    @org.junit.Test
     public void getFileInfo() {
     }
 
@@ -99,45 +83,6 @@ public class FileUtilityTest {
     }
 
     @Test
-    public void getMacClientFileNameList() {
-        // I only have one file here for testing for now.
-        // Need to change this if more files are added.
-        ArrayList<String> fileNameList = SyncClientType.MAC.getLocalFileNames();
-        String expectedName = "milkyway.jpeg";
-        for (String fileName: fileNameList) {
-            System.out.println(fileName);
-        }
-        String actualName = fileNameList.get(0);
-        assertEquals(true, expectedName.equals(actualName));
-    }
-
-    @Test
-    public void getWindowsClientFileNameList() {
-        // I only have one file here for testing for now.
-        // Need to change this if more files are added.
-        ArrayList<String> fileNameList = SyncClientType.WINDOWS.getLocalFileNames();
-        for (String fileName: fileNameList) {
-            System.out.println(fileName);
-        }
-    }
-
-    @Test
-    public void getMacFileNamesToUpload() {
-        ArrayList<String> filesToUpload = FileUtility.getMacFileNamesToUpload();
-        for (String fileName: filesToUpload) {
-            System.out.println(fileName);
-        }
-    }
-
-    @Test
-    public void getWindowsFileNamesToUpload() {
-        ArrayList<String> filesToUpload = FileUtility.getWindowsFileNamesToUpload();
-        for (String fileName: filesToUpload) {
-            System.out.println(fileName);
-        }
-    }
-
-    @Test
     public void getMacFileNamesToDownload() {
         ArrayList<String> filesToDownload = FileUtility.getMacFileNamesToDownload();
         for (String fileName: filesToDownload) {
@@ -149,22 +94,6 @@ public class FileUtilityTest {
     public void getWindowsFileNamesToDownload() {
         ArrayList<String> filesToDownload = FileUtility.getWindowsFileNamesToDownload();
         for (String fileName: filesToDownload) {
-            System.out.println(fileName);
-        }
-    }
-
-    @Test
-    public void getMacFileNamesToDelete() {
-        ArrayList<String> filesToDelete = FileUtility.getMacFileNamesToDelete();
-        for (String fileName: filesToDelete) {
-            System.out.println(fileName);
-        }
-    }
-
-    @Test
-    public void getWindowsFileNamesToDelete() {
-        ArrayList<String> filesToDelete = FileUtility.getWindowsFileNamesToDelete();
-        for (String fileName: filesToDelete) {
             System.out.println(fileName);
         }
     }

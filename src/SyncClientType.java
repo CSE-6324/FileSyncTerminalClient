@@ -40,4 +40,46 @@ public enum SyncClientType {
         }
         return nameList;
     }
+
+    public ArrayList<String> getNotsyncedFilesByClient() {
+        ArrayList<String> currentServerFileList = FileUtility.getServerFileNameList();
+        ArrayList<String> notSyncedFileNameList = new ArrayList<>();
+        for (String clientFileName: getLocalFileNames()) {
+            if (!currentServerFileList.contains(clientFileName)) {
+                notSyncedFileNameList.add(clientFileName);
+            }
+        }
+        return notSyncedFileNameList;
+    }
+
+    public ArrayList<String> getFileNamesToDelete() {
+        ArrayList<String> filesToDelete = new ArrayList<>();
+        // notSyncedFileNameList : these are the files that are in the client file folder but not in the server
+        ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient();
+        ArrayList<String> currentOtherClientFileList = getOtherClientFileNames();
+        for (String fileName: notSyncedFileNameList) {
+            if (!currentOtherClientFileList.contains(fileName)) {
+                filesToDelete.add(fileName);
+            }
+        }
+        return filesToDelete;
+    }
+
+    public ArrayList<String> getOtherClientFileNames() {
+        ArrayList<String> otherClientFileNames = new ArrayList<>();
+        for (SyncClientType clientType: SyncClientType.values()) {
+            if (this != clientType && clientType != UNKNOWN) {
+                for (String fileName: clientType.getLocalFileNames()) {
+                    if (!otherClientFileNames.contains(fileName)) {
+                        otherClientFileNames.add(fileName);
+                    }
+                }
+            }
+        }
+        return otherClientFileNames;
+    }
+
+    public ArrayList<String> getFileNamesToUpload() {
+        return getNotsyncedFilesByClient();
+    }
 }
