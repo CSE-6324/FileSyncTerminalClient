@@ -8,8 +8,6 @@ import java.util.ArrayList;
 public class FileUtility {
     private static final String TAG = "FileUtility";
     public static final String PROJECT_FILE_PATH = "/Users/sudiptasharif/repos/FileSyncer/project_files/";
-    public static final String FOLDER_PATH_MAC = PROJECT_FILE_PATH + "mac_files/";
-    public static final String FOLDER_PATH_WIN = PROJECT_FILE_PATH + "win_files/";
     public static final String FOLDER_PATH_SERVER = PROJECT_FILE_PATH + "server_files/";
     public static final int FILE_BLOCK_SIZE_4_MB = 1024 * 1024 * 4;
 
@@ -23,12 +21,12 @@ public class FileUtility {
     }
 
     public static ArrayList<File> getMacFiles() {
-        File macFolder = new File(FOLDER_PATH_MAC);
+        File macFolder = new File(SyncClientType.MAC.getLocalFilePath());
         return getClientFiles(macFolder);
     }
 
     public static ArrayList<File> getWindowsFiles() {
-        File winFolder = new File(FOLDER_PATH_WIN);
+        File winFolder = new File(SyncClientType.WINDOWS.getLocalFilePath());
         return getClientFiles(winFolder);
     }
 
