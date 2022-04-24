@@ -81,20 +81,4 @@ public class FileUtilityTest {
         String actualName = FileUtility.getFileNameFromFileBlockName(fileBlockName);
         assertEquals(true, expectedName.equals(actualName));
     }
-
-    @Test
-    public void getMacFileNamesToDownload() {
-        ArrayList<String> filesToDownload = FileUtility.getMacFileNamesToDownload();
-        for (String fileName: filesToDownload) {
-            System.out.println(fileName);
-        }
-    }
-
-    @Test
-    public void getWindowsFileNamesToDownload() {
-        ArrayList<String> filesToDownload = FileUtility.getWindowsFileNamesToDownload();
-        for (String fileName: filesToDownload) {
-            System.out.println(fileName);
-        }
-    }
 }
