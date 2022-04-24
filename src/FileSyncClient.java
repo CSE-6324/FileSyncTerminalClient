@@ -15,6 +15,6 @@ public class FileSyncClient {
 //            System.err.println("Usage: java FileSyncClient <w/m>");
 //            System.exit(1);
 //        }
-//        SyncClient syncClient = new SyncClient(args[0], args[1], Integer.parseInt(args[2]));
+//        SyncClient syncClient = new SyncClient(args[0]);
     }
 }
