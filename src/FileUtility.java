@@ -131,9 +131,9 @@ public class FileUtility {
     private static ArrayList<String> getFilesToUploadByClientFileList(ArrayList<String> clientFileNameList) {
         ArrayList<String> currentServerFileList = getServerFileNameList();
         ArrayList<String> clientFileNamesToUpload = new ArrayList<>();
-        for (String macFileName: clientFileNameList) {
-            if (!currentServerFileList.contains(macFileName)) {
-                clientFileNamesToUpload.add(macFileName);
+        for (String clientFileName: clientFileNameList) {
+            if (!currentServerFileList.contains(clientFileName)) {
+                clientFileNamesToUpload.add(clientFileName);
             }
         }
         return clientFileNamesToUpload;
