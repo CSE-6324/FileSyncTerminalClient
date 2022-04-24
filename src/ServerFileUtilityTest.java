@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-public class FileUtilityTest {
+public class ServerFileUtilityTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
@@ -65,7 +65,7 @@ public class FileUtilityTest {
     public void getServerFileNameList() {
         // I only have one file here for testing for now.
         // Need to change this if more files are added.
-        ArrayList<String> serverFiles = FileUtility.getServerFileNameList();
+        ArrayList<String> serverFiles = ServerFileUtility.getServerFileNameList();
 //        for (String fileName: serverFiles) {
 //            System.out.println(fileName);
 //        }
@@ -78,7 +78,7 @@ public class FileUtilityTest {
     public void getFileNameFromFileBlockName() {
         String fileBlockName = "milkyway_001.jpeg";
         String expectedName = "milkyway.jpeg";
-        String actualName = FileUtility.getFileNameFromFileBlockName(fileBlockName);
+        String actualName = ServerFileUtility.getFileNameFromFileBlockName(fileBlockName);
         assertEquals(true, expectedName.equals(actualName));
     }
 }

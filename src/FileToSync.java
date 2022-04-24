@@ -17,7 +17,7 @@ public class FileToSync {
 
     public Message generateFileBlocks() {
         final String METHOD_NAME = "generateFileBlocks";
-        Message returnMsg = FileUtility.getFileBlocks(this.fileToSync, this.fileBlockList);
+        Message returnMsg = ServerFileUtility.getFileBlocks(this.fileToSync, this.fileBlockList);
         if (!returnMsg.isMessageSuccess()) {
             returnMsg.setMessage(TAG, METHOD_NAME, returnMsg.getMessage());
         }

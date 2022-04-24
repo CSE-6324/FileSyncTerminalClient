@@ -5,8 +5,8 @@ import java.util.ArrayList;
  * @author sharif
  */
 
-public class FileUtility {
-    private static final String TAG = "FileUtility";
+public class ServerFileUtility {
+    private static final String TAG = "ServerFileUtility";
     public static final String PROJECT_FILE_PATH = "/Users/sudiptasharif/repos/FileSyncer/project_files/";
     public static final String FOLDER_PATH_SERVER = PROJECT_FILE_PATH + "server_files/";
     public static final int FILE_BLOCK_SIZE_4_MB = 1024 * 1024 * 4;

@@ -42,7 +42,7 @@ public enum SyncClientType {
     }
 
     public ArrayList<String> getNotsyncedFilesByClient() {
-        ArrayList<String> currentServerFileList = FileUtility.getServerFileNameList();
+        ArrayList<String> currentServerFileList = ServerFileUtility.getServerFileNameList();
         ArrayList<String> notSyncedFileNameList = new ArrayList<>();
         for (String clientFileName: getLocalFileNames()) {
             if (!currentServerFileList.contains(clientFileName)) {
@@ -84,7 +84,7 @@ public enum SyncClientType {
     }
 
     public ArrayList<String> getFilesToDownload() {
-        ArrayList<String> currentServerFileList = FileUtility.getServerFileNameList();
+        ArrayList<String> currentServerFileList = ServerFileUtility.getServerFileNameList();
         ArrayList<String> localFileList = getLocalFileNames();
         ArrayList<String> filesToDownload = new ArrayList<>();
         for (String serverFileName: currentServerFileList) {
