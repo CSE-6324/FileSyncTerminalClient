@@ -135,4 +135,12 @@ public class FileUtilityTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getWindowsFileNamesToUpload() {
+        ArrayList<String> filesToUpload = FileUtility.getWindowsFileNamesToUpload();
+        for (String fileName: filesToUpload) {
+            System.out.println(fileName);
+        }
+    }
 }

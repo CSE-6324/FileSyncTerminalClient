@@ -138,4 +138,7 @@ public class FileUtility {
         }
         return clientFileNamesToUpload;
     }
+    public static ArrayList<String> getWindowsFileNamesToUpload() {
+        return getFilesToUploadByClientFileList(getWindowsClientFileNameList());
+    }
 }
