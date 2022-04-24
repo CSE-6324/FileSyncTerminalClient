@@ -159,4 +159,12 @@ public class FileUtilityTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getMacFileNamesToDelete() {
+        ArrayList<String> filesToDelete = FileUtility.getMacFileNamesToDelete();
+        for (String fileName: filesToDelete) {
+            System.out.println(fileName);
+        }
+    }
 }

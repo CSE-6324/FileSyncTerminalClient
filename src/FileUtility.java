@@ -153,12 +153,25 @@ public class FileUtility {
 
     private static ArrayList<String> getNotsyncedFilesByClient(ArrayList<String> clientFileNameList) {
         ArrayList<String> currentServerFileList = getServerFileNameList();
-        ArrayList<String> deSyncedFileNameList = new ArrayList<>();
+        ArrayList<String> notSyncedFileNameList = new ArrayList<>();
         for (String clientFileName: clientFileNameList) {
             if (!currentServerFileList.contains(clientFileName)) {
-                deSyncedFileNameList.add(clientFileName);
+                notSyncedFileNameList.add(clientFileName);
             }
         }
-        return deSyncedFileNameList;
+        return notSyncedFileNameList;
+    }
+
+    public static ArrayList<String> getMacFileNamesToDelete() {
+        // notSyncedFileNameList : these are the files that are in the mac files folder but not in the server
+        ArrayList<String> notSyncedFileNameList = getNotsyncedFilesByClient(getMacClientFileNameList());
+        ArrayList<String> currentWindowsClientFileList = getWindowsClientFileNameList();
+        ArrayList<String> filesToDelete = new ArrayList<>();
+        for (String fileName: notSyncedFileNameList) {
+            if (!currentWindowsClientFileList.contains(fileName)) {
+                filesToDelete.add(fileName);
+            }
+        }
+        return filesToDelete;
     }
 }
