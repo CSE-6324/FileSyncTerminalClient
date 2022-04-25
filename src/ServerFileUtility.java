@@ -9,44 +9,6 @@ public class ServerFileUtility {
     private static final String TAG = "ServerFileUtility";
     public static final String FOLDER_PATH_SERVER = PrgUtility.PROJECT_FILE_PATH + "server_files/";
 
-    private static String getBlockName(String originalFileName, int blockNum) {
-        String filePartName = "";
-        String[] fileNameTokens = originalFileName.split("\\.");
-        String fileNameWithoutExt = fileNameTokens[0];
-        String extName = fileNameTokens[1];
-        filePartName = String.format("%s_%03d", fileNameWithoutExt, blockNum);
-        filePartName += "." + extName;
-        return filePartName;
-    }
-
-    public static Message getFileBlocks(File file, ArrayList<FileBlock> fileBlockList) {
-        final String METHOD_NAME = "getFileBlocks";
-        Message returnMsg = new Message("");
-        int blockNum = 0;
-        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
-        byte[] buffer = new byte[fileBlockSize];
-        String fileName = file.getName();
-        int bytesRead = -1;
-        try(FileInputStream fileInputStream = new FileInputStream(file);
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-        ) {
-            bytesRead = bufferedInputStream.read(buffer);
-            while (bytesRead > 0) {
-                String fileBlockName = getBlockName(fileName, ++blockNum);
-                File newFile = new File(file.getParent(), fileBlockName);
-                try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
-                    fileOutputStream.write(buffer, 0, bytesRead);
-                }
-                fileBlockList.add(new FileBlock(blockNum, newFile));
-                bytesRead = bufferedInputStream.read(buffer);
-            }
-            returnMsg.setMessageSuccess(true);
-        } catch (IOException e) {
-            returnMsg.setMessageSuccess(false);
-            returnMsg.setMessage(TAG, METHOD_NAME, e.getMessage());
-        }
-        return returnMsg;
-    }
 
     public static ArrayList<String> getServerFileNameList() {
         ArrayList<String> fileList = new ArrayList<>();

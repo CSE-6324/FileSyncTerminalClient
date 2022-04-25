@@ -15,9 +15,14 @@ public class FileToSync {
         fileBlockList = new ArrayList<>();
     }
 
+    public FileToSync(String fileToSyncPath) {
+        fileToSync = new File(fileToSyncPath);
+        fileBlockList = new ArrayList<>();
+    }
+
     public Message generateFileBlocks() {
         final String METHOD_NAME = "generateFileBlocks";
-        Message returnMsg = ServerFileUtility.getFileBlocks(this.fileToSync, this.fileBlockList);
+        Message returnMsg = getFileBlocks(this.fileToSync, this.fileBlockList);
         if (!returnMsg.isMessageSuccess()) {
             returnMsg.setMessage(TAG, METHOD_NAME, returnMsg.getMessage());
         }
@@ -60,5 +65,44 @@ public class FileToSync {
             }
         }
         return returnMsg;
+    }
+
+    public Message getFileBlocks(File file, ArrayList<FileBlock> fileBlockList) {
+        final String METHOD_NAME = "getFileBlocks";
+        Message returnMsg = new Message("");
+        int blockNum = 0;
+        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
+        byte[] buffer = new byte[fileBlockSize];
+        String fileName = file.getName();
+        int bytesRead = -1;
+        try(FileInputStream fileInputStream = new FileInputStream(file);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+        ) {
+            bytesRead = bufferedInputStream.read(buffer);
+            while (bytesRead > 0) {
+                String fileBlockName = getBlockName(fileName, ++blockNum);
+                File newFile = new File(file.getParent(), fileBlockName);
+                try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
+                    fileOutputStream.write(buffer, 0, bytesRead);
+                }
+                fileBlockList.add(new FileBlock(blockNum, newFile));
+                bytesRead = bufferedInputStream.read(buffer);
+            }
+            returnMsg.setMessageSuccess(true);
+        } catch (IOException e) {
+            returnMsg.setMessageSuccess(false);
+            returnMsg.setMessage(TAG, METHOD_NAME, e.getMessage());
+        }
+        return returnMsg;
+    }
+
+    public String getBlockName(String originalFileName, int blockNum) {
+        String filePartName = "";
+        String[] fileNameTokens = originalFileName.split("\\.");
+        String fileNameWithoutExt = fileNameTokens[0];
+        String extName = fileNameTokens[1];
+        filePartName = String.format("%s_%03d", fileNameWithoutExt, blockNum);
+        filePartName += "." + extName;
+        return filePartName;
     }
 }
