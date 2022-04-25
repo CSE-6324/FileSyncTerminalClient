@@ -20,7 +20,7 @@ public class FileBlock {
     public Message generateCheckSum()  {
         final String METHOD_NAME = "getCheckSum";
         StringBuilder fileCheckSum = new StringBuilder();
-        Message returnMsg = new Message("");
+        Message returnMsg = new Message();
         try (InputStream inputStream = new FileInputStream(this.fileBlock)) {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[1024];
@@ -32,14 +32,13 @@ public class FileBlock {
             for (byte b: md.digest()) {
                 fileCheckSum.append(String.format("%02x", b));
             }
-            returnMsg.setMessageSuccess(true);
             this.checkSum = fileCheckSum.toString();
         } catch (IOException e) {
             returnMsg.setMessageSuccess(false);
-            returnMsg.setMessage(TAG, METHOD_NAME, e.getMessage());
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, "(IOException) " + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
             returnMsg.setMessageSuccess(false);
-            returnMsg.setMessage(TAG, METHOD_NAME, e.getMessage());
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, "(NoSuchAlgorithmException) " + e.getMessage());
         }
         return returnMsg;
     }

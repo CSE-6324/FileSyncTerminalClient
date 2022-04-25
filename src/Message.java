@@ -4,11 +4,14 @@
 
 public class Message {
     private final int DEFAULT_CODE = -1;
-    private final boolean DEFAULT_SUCCESS = false;
+    private final boolean DEFAULT_SUCCESS = true;
     private String msg;
     private int msgCode;
     private boolean msgSuccess;
 
+    public Message() {
+        this("");
+    }
     public Message(String msg) {
         this.msg = msg;
         this.msgCode = DEFAULT_CODE;
@@ -56,7 +59,7 @@ public class Message {
         this.msg = msg;
     }
 
-    public void setMessage(String className, String methodName, String msg) {
-        this.msg = className + " @ " + methodName +": " + msg;
+    public void setErrorMessage(String className, String methodName, String msg) {
+        setMessage("[Error]:" + className + " @ " + methodName +": " + msg);
     }
 }

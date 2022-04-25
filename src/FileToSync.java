@@ -21,21 +21,15 @@ public class FileToSync {
     }
 
     public Message generateFileBlocks() {
-        final String METHOD_NAME = "generateFileBlocks";
         Message returnMsg = getFileBlocks(this.fileToSync, this.fileBlockList);
-        if (!returnMsg.isMessageSuccess()) {
-            returnMsg.setMessage(TAG, METHOD_NAME, returnMsg.getMessage());
-        }
         return returnMsg;
     }
 
     public Message generateFileBlockCheckSums() {
-        final String METHOD_NAME = "generateFileBlockCheckSums";
-        Message returnMsg = new Message("", true);
+        Message returnMsg = new Message();
         for (FileBlock fb : fileBlockList) {
             returnMsg = fb.generateCheckSum();
             if (!returnMsg.isMessageSuccess()) {
-                returnMsg.setMessage(TAG, METHOD_NAME, returnMsg.getMessage());
                 break;
             }
         }
@@ -56,11 +50,11 @@ public class FileToSync {
 
     public Message deleteAllFileBlocks() {
         final String METHOD_NAME = "deleteAllFileBlocks";
-        Message returnMsg = new Message("", true);
+        Message returnMsg = new Message();
         for (FileBlock fb: this.fileBlockList) {
             if (!fb.deleteFileBlock()) {
                 returnMsg.setMessageSuccess(false);
-                returnMsg.setMessage(TAG, METHOD_NAME, "Unable to delete file block: " + fb.getFileBlockName());
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, "Unable to delete file block: " + fb.getFileBlockName());
                 break;
             }
         }
@@ -69,7 +63,7 @@ public class FileToSync {
 
     public Message getFileBlocks(File file, ArrayList<FileBlock> fileBlockList) {
         final String METHOD_NAME = "getFileBlocks";
-        Message returnMsg = new Message("");
+        Message returnMsg = new Message();
         int blockNum = 0;
         int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
         byte[] buffer = new byte[fileBlockSize];
@@ -88,10 +82,9 @@ public class FileToSync {
                 fileBlockList.add(new FileBlock(blockNum, newFile));
                 bytesRead = bufferedInputStream.read(buffer);
             }
-            returnMsg.setMessageSuccess(true);
         } catch (IOException e) {
             returnMsg.setMessageSuccess(false);
-            returnMsg.setMessage(TAG, METHOD_NAME, e.getMessage());
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, "(IOException) " + e.getMessage());
         }
         return returnMsg;
     }
