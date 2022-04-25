@@ -58,10 +58,11 @@ public class FileToSync {
                 break;
             }
         }
+        this.fileBlockList.clear();
         return returnMsg;
     }
 
-    public Message getFileBlocks(File file, ArrayList<FileBlock> fileBlockList) {
+    private Message getFileBlocks(File file, ArrayList<FileBlock> fileBlockList) {
         final String METHOD_NAME = "getFileBlocks";
         Message returnMsg = new Message();
         int blockNum = 0;
@@ -89,7 +90,7 @@ public class FileToSync {
         return returnMsg;
     }
 
-    public String getBlockName(String originalFileName, int blockNum) {
+    private String getBlockName(String originalFileName, int blockNum) {
         String filePartName = "";
         String[] fileNameTokens = originalFileName.split("\\.");
         String fileNameWithoutExt = fileNameTokens[0];

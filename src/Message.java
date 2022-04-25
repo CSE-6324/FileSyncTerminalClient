@@ -60,6 +60,6 @@ public class Message {
     }
 
     public void setErrorMessage(String className, String methodName, String msg) {
-        setMessage("[Error]:" + className + " @ " + methodName +": " + msg);
+        setMessage("[Error] " + className + " @ " + methodName +"(): " + msg);
     }
 }
