@@ -21,15 +21,21 @@ public class FileToSync {
     }
 
     public Message generateFileBlocks() {
+        final String METHOD_NAME = "generateFileBlocks";
         Message returnMsg = getFileBlocks(this.fileToSync, this.fileBlockList);
+        if (!returnMsg.isMessageSuccess()){
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+        }
         return returnMsg;
     }
 
     public Message generateFileBlockCheckSums() {
+        final String METHOD_NAME = "generateFileBlockCheckSums";
         Message returnMsg = new Message();
         for (FileBlock fb : fileBlockList) {
             returnMsg = fb.generateCheckSum();
             if (!returnMsg.isMessageSuccess()) {
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
                 break;
             }
         }
