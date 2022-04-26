@@ -106,4 +106,16 @@ public enum SyncClientType {
         }
         return filesForDeltaSyncTest;
     }
+
+    public ArrayList<FileToSync> getFilesToCheckForDeltaSync() {
+        ArrayList<FileToSync> filesForDeltaSyncCheck = new ArrayList<>();
+        ArrayList<String> fileNamesForDeltaCheck = getFileNamesToCheckForDeltaSync();
+        for (String fileName: fileNamesForDeltaCheck) {
+            FileToSync fileToSync = new FileToSync(fileName);
+            fileToSync.generateFileBlocks();
+            fileToSync.generateFileBlockCheckSums();
+            filesForDeltaSyncCheck.add(fileToSync);
+        }
+        return filesForDeltaSyncCheck;
+    }
 }

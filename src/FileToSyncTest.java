@@ -12,6 +12,7 @@ public class FileToSyncTest {
 
         fileToSync = new FileToSync(SyncClientType.WINDOWS.getLocalFilePath() + "stars.jpeg");
         returnMsg = fileToSync.generateFileBlocks();
+        System.out.println(returnMsg.getMessage());
         assertEquals(true, returnMsg.isMessageSuccess());
         assertEquals(true, returnMsg.getMessage().equals(""));
     }
@@ -24,6 +25,9 @@ public class FileToSyncTest {
         returnMsg = fileToSync.generateFileBlockCheckSums();
         assertEquals(true, returnMsg.isMessageSuccess());
         assertEquals(true, returnMsg.getMessage().equals(""));
+        for (FileBlock fb: fileToSync.getFileBlockList()) {
+            System.out.println(fb.getFileCheckSum());
+        }
     }
 
     @Test

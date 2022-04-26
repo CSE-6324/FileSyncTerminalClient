@@ -76,7 +76,7 @@ public class FileToSync {
             bytesRead = bufferedInputStream.read(buffer);
             while (bytesRead > 0) {
                 String fileBlockName = getBlockName(fileName, ++blockNum);
-                File newFile = new File(file.getParent(), fileBlockName);
+                File newFile = new File(PrgUtility.CLIENT_FILE_BLOCKS_PATH, fileBlockName);
                 try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
                     fileOutputStream.write(buffer, 0, bytesRead);
                 }
