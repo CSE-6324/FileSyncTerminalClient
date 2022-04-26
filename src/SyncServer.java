@@ -46,4 +46,16 @@ public enum SyncServer {
     public String getServerName() {
         return serverName;
     }
+
+    public ArrayList<String> getAllFileBlocksByFileName(String fileName) {
+        ArrayList<String> fileBlocks = new ArrayList<>();
+        File serverFolder = new File(serverFolderPath);
+        for (File f: serverFolder.listFiles()) {
+            String fileBlockName = f.getName();
+            if (fileBlockName.startsWith(fileName.split("\\.")[0])) {
+                fileBlocks.add(fileBlockName);
+            }
+        }
+        return fileBlocks;
+    }
 }

@@ -13,4 +13,12 @@ public class SyncServerTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getAllFileBlocksByFileName() {
+        ArrayList<String> milkywayFileBlocks = SyncServer.LOCALHOST.getAllFileBlocksByFileName("milkyway.jpeg");
+        for (String fileName: milkywayFileBlocks) {
+            System.out.println(fileName);
+        }
+    }
 }
