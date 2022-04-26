@@ -183,4 +183,17 @@ public class SyncClientTypeTest {
             }
         }
     }
+
+    @Test
+    public void getFilesToUpload() {
+        ArrayList<FileToSync> filesToUpload = new ArrayList<>();
+        Message returnMsg = SyncClientType.WINDOWS.getFilesToUpload(filesToUpload);
+        System.out.println(returnMsg.getMessage());
+        assertEquals(true, returnMsg.isMessageSuccess());
+        for (FileToSync f2s: filesToUpload) {
+            for (FileBlock fb: f2s.getFileBlockList()) {
+                System.out.println(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
+            }
+        }
+    }
 }

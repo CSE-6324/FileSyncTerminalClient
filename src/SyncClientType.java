@@ -124,4 +124,21 @@ public enum SyncClientType {
         }
         return returnMsg;
     }
+
+    public Message getFilesToUpload(ArrayList<FileToSync> filesToUpload) {
+        final String METHOD_NAME = "getFilesToUpload";
+        Message returnMsg = new Message();
+        ArrayList<String> fileNamesToUpload = getFileNamesToUpload();
+        for (String fileName: fileNamesToUpload) {
+            FileToSync fileToSync = new FileToSync(localFilePath + fileName);
+            returnMsg = fileToSync.generateFileBlocksAndCheckSums();
+            if (returnMsg.isMessageSuccess()) {
+                filesToUpload.add(fileToSync);
+            } else {
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+                break;
+            }
+        }
+        return returnMsg;
+    }
 }
