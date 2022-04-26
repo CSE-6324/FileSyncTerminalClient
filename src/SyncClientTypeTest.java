@@ -125,18 +125,18 @@ public class SyncClientTypeTest {
     }
 
     @Test
-    public void getFilesToDownloadMac() {
+    public void getFileNamesToDownloadMac() {
         System.out.println("getFilesToDownloadMac");
-        ArrayList<String> filesToDownload = SyncClientType.MAC.getFilesToDownload();
+        ArrayList<String> filesToDownload = SyncClientType.MAC.getFileNamesToDownload();
         for (String fileName: filesToDownload) {
             System.out.println(fileName);
         }
     }
 
     @Test
-    public void getFilesToDownloadWindows() {
+    public void getFileNamesToDownloadWindows() {
         System.out.println("getFilesToDownloadWindows");
-        ArrayList<String> filesToDownload = SyncClientType.WINDOWS.getFilesToDownload();
+        ArrayList<String> filesToDownload = SyncClientType.WINDOWS.getFileNamesToDownload();
         for (String fileName: filesToDownload) {
             System.out.println(fileName);
         }

@@ -84,7 +84,7 @@ public enum SyncClientType {
         return getNotSyncedFilesByClient();
     }
 
-    public ArrayList<String> getFilesToDownload() {
+    public ArrayList<String> getFileNamesToDownload() {
         ArrayList<String> currentServerFileList = SyncServer.LOCALHOST.getSyncedFileNames();
         ArrayList<String> localFileList = getLocalFileNames();
         ArrayList<String> filesToDownload = new ArrayList<>();
