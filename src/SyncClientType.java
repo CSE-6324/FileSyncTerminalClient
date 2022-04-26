@@ -8,6 +8,7 @@ public enum SyncClientType {
 
     private String clientName;
     private String localFilePath;
+    private static final String TAG = "SyncClientType";
 
     SyncClientType (String clientName, String localFilePath) {
         this.clientName = clientName;
@@ -107,15 +108,20 @@ public enum SyncClientType {
         return filesForDeltaSyncTest;
     }
 
-    public ArrayList<FileToSync> getFilesToCheckForDeltaSync() {
-        ArrayList<FileToSync> filesForDeltaSyncCheck = new ArrayList<>();
+    public Message getFilesToCheckForDeltaSync(ArrayList<FileToSync> filesForDeltaSyncCheck) {
+        final String METHOD_NAME = "getFilesToCheckForDeltaSync";
+        Message returnMsg = new Message();
         ArrayList<String> fileNamesForDeltaCheck = getFileNamesToCheckForDeltaSync();
         for (String fileName: fileNamesForDeltaCheck) {
-            FileToSync fileToSync = new FileToSync(fileName);
-            fileToSync.generateFileBlocks();
-            fileToSync.generateFileBlockCheckSums();
-            filesForDeltaSyncCheck.add(fileToSync);
+            FileToSync fileToSync = new FileToSync(localFilePath + fileName);
+            returnMsg = fileToSync.generateFileBlocksAndCheckSums();
+            if (returnMsg.isMessageSuccess()) {
+                filesForDeltaSyncCheck.add(fileToSync);
+            } else {
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+                break;
+            }
         }
-        return filesForDeltaSyncCheck;
+        return returnMsg;
     }
 }

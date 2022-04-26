@@ -99,4 +99,18 @@ public class FileToSync {
         filePartName += "." + extName;
         return filePartName;
     }
+
+    public Message generateFileBlocksAndCheckSums() {
+        final String METHOD_NAME = "generateFileBlocksAndCheckSums";
+        Message returnMsg = generateFileBlocks();
+        if (returnMsg.isMessageSuccess()) {
+            returnMsg = generateFileBlockCheckSums();
+            if (!returnMsg.isMessageSuccess()) {
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+            }
+        } else {
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+        }
+        return returnMsg;
+    }
 }

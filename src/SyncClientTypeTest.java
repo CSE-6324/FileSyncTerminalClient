@@ -157,4 +157,30 @@ public class SyncClientTypeTest {
             System.out.println(fileName);
         }
     }
+
+    @Test
+    public void getFilesToCheckForDeltaSyncMac() {
+        ArrayList<FileToSync> filesForDeltaSyncCheck = new ArrayList<>();
+        Message returnMsg = SyncClientType.MAC.getFilesToCheckForDeltaSync(filesForDeltaSyncCheck);
+        System.out.println(returnMsg.getMessage());
+        assertEquals(true, returnMsg.isMessageSuccess());
+        for (FileToSync f2s: filesForDeltaSyncCheck) {
+            for (FileBlock fb: f2s.getFileBlockList()) {
+                System.out.println(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
+            }
+        }
+    }
+
+    @Test
+    public void getFilesToCheckForDeltaSyncWindows() {
+        ArrayList<FileToSync> filesForDeltaSyncCheck = new ArrayList<>();
+        Message returnMsg = SyncClientType.WINDOWS.getFilesToCheckForDeltaSync(filesForDeltaSyncCheck);
+        System.out.println(returnMsg.getMessage());
+        assertEquals(true, returnMsg.isMessageSuccess());
+        for (FileToSync f2s: filesForDeltaSyncCheck) {
+            for (FileBlock fb: f2s.getFileBlockList()) {
+                System.out.println(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
+            }
+        }
+    }
 }
