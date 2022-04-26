@@ -143,16 +143,16 @@ public class SyncClientTypeTest {
     }
 
     @Test
-    public void getFilesToCheckForDeltaSyncMac() {
-        ArrayList<String> filesForDeltaSyncTest = SyncClientType.MAC.getFilesToCheckForDeltaSync();
+    public void getFileNamesToCheckForDeltaSyncMac() {
+        ArrayList<String> filesForDeltaSyncTest = SyncClientType.MAC.getFileNamesToCheckForDeltaSync();
         for (String fileName: filesForDeltaSyncTest) {
             System.out.println(fileName);
         }
     }
 
     @Test
-    public void getFilesToCheckForDeltaSyncWindows() {
-        ArrayList<String> filesForDeltaSyncTest = SyncClientType.WINDOWS.getFilesToCheckForDeltaSync();
+    public void getFileNamesToCheckForDeltaSyncWindows() {
+        ArrayList<String> filesForDeltaSyncTest = SyncClientType.WINDOWS.getFileNamesToCheckForDeltaSync();
         for (String fileName: filesForDeltaSyncTest) {
             System.out.println(fileName);
         }

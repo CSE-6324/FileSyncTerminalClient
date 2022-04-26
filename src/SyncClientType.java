@@ -95,7 +95,7 @@ public enum SyncClientType {
         return filesToDownload;
     }
 
-    public ArrayList<String> getFilesToCheckForDeltaSync() {
+    public ArrayList<String> getFileNamesToCheckForDeltaSync() {
         ArrayList<String> currentServerFileList = SyncServer.LOCALHOST.getSyncedFileNames();
         ArrayList<String> localFileList = getLocalFileNames();
         ArrayList<String> filesForDeltaSyncTest = new ArrayList<>();
