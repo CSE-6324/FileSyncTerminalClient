@@ -196,4 +196,16 @@ public class SyncClientTypeTest {
             }
         }
     }
+
+    @Test
+    public void removeDeletedFilesByOtherClientsMac() {
+        Message retuMessage = SyncClientType.MAC.removeDeletedFilesByOtherClients();
+        assertEquals(true, retuMessage.isMessageSuccess());
+    }
+
+    @Test
+    public void removeDeletedFilesByOtherClientsWindows() {
+        Message retuMessage = SyncClientType.WINDOWS.removeDeletedFilesByOtherClients();
+        assertEquals(true, retuMessage.isMessageSuccess());
+    }
 }

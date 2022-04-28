@@ -141,4 +141,25 @@ public enum SyncClientType {
         }
         return returnMsg;
     }
+
+    public Message removeDeletedFilesByOtherClients() {
+        final String METHOD_NAME = "deleteFiles";
+        Message returnMsg = new Message();
+        ArrayList<String> fileNamesToDelete = getFileNamesToDelete();
+        for (String fileName: fileNamesToDelete) {
+            try {
+                File file = new File(localFilePath + fileName);
+                if (!file.delete()) {
+                    returnMsg.setMessageSuccess(false);
+                    returnMsg.setErrorMessage(TAG, METHOD_NAME, "Unable to delete file: " + fileName);
+                    break;
+                }
+            } catch (Exception e) {
+                returnMsg.setMessageSuccess(false);
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
+                break;
+            }
+        }
+        return returnMsg;
+    }
 }
