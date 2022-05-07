@@ -18,5 +18,9 @@ public class SyncClient {
             return SyncClientType.UNKNOWN;
         }
     }
+
+    public SyncClientType getClientType() {
+        return this.clientType;
+    }
 }
 
