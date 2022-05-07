@@ -10,7 +10,7 @@ public class FileToSyncTest {
         Message returnMsg = fileToSync.generateFileBlocks();
         assertEquals(false, returnMsg.isMessageSuccess());
 
-        fileToSync = new FileToSync(SyncClientType.WINDOWS.getLocalFilePath() + "alpine.jpeg");
+        fileToSync = new FileToSync(SyncClientType.WINDOWS.getLocalFilePath() + "file_test.txt");
         returnMsg = fileToSync.generateFileBlocks();
         System.out.println(returnMsg.getMessage());
         assertEquals(true, returnMsg.isMessageSuccess());
@@ -19,8 +19,9 @@ public class FileToSyncTest {
 
     @Test
     public void generateFileBlockCheckSums() {
-        FileToSync fileToSync = new FileToSync(SyncClientType.MAC.getLocalFilePath() + "alpine.jpeg");
+        FileToSync fileToSync = new FileToSync(SyncClientType.MAC.getLocalFilePath() + "file_test.txt");
         Message returnMsg = fileToSync.generateFileBlocks();
+        System.out.println(returnMsg.getMessage());
         assertEquals(true, returnMsg.isMessageSuccess());
         returnMsg = fileToSync.generateFileBlockCheckSums();
         assertEquals(true, returnMsg.isMessageSuccess());
@@ -67,7 +68,8 @@ public class FileToSyncTest {
 
     @Test
     public void generateFileBlocksAndCheckSums() {
-        FileToSync fileToSync = new FileToSync(SyncClientType.MAC.getLocalFilePath() + "alpine.jpeg");
+        // mac
+        FileToSync fileToSync = new FileToSync(SyncClientType.MAC.getLocalFilePath() + "text.txt");
         Message returnMsg = fileToSync.generateFileBlocksAndCheckSums();
         assertEquals(true, returnMsg.isMessageSuccess());
         for (FileBlock fb: fileToSync.getFileBlockList()) {

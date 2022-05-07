@@ -162,4 +162,34 @@ public enum SyncClientType {
         }
         return returnMsg;
     }
+
+    public Message getFileBlocksToUploadForDeltaSync(ArrayList<FileBlock> fileBlocksToUpload) {
+        final String METHOD_NAME = "getFileBlocksToUpload";
+        Message returnMsg = new Message();
+        ArrayList<FileToSync> filesForDeltaSyncCheck = new ArrayList<>();
+        returnMsg = getFilesToCheckForDeltaSync(filesForDeltaSyncCheck);
+        if (returnMsg.isMessageSuccess()) {
+            for (FileToSync clientFile: filesForDeltaSyncCheck) {
+                // get all file flocks of a target file from server
+                ArrayList<FileBlock> serverFileBlockList = new ArrayList<>();
+                returnMsg = SyncServer.LOCALHOST.getAllFileBlocksByFileName(clientFile.getFileToSyncName(), serverFileBlockList);
+                if (!returnMsg.isMessageSuccess()) {
+                    returnMsg.setErrorMessage(TAG, METHOD_NAME, "UnableToGetFileBlocksFromServer",returnMsg.getMessage());
+                    break;
+                }
+                for (FileBlock clientFileBlock: clientFile.getFileBlockList()) {
+                    for (FileBlock serverFileBlock: serverFileBlockList) {
+                        if (clientFileBlock.getFileBlockName().equals(serverFileBlock.getFileBlockName())) {
+                            if (!clientFileBlock.getFileCheckSum().equals(serverFileBlock.getFileCheckSum())) {
+                                fileBlocksToUpload.add(clientFileBlock);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, "UnableToGetFilesToCheckForDeltaSync", returnMsg.getMessage());
+        }
+        return returnMsg;
+    }
 }

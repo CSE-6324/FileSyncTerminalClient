@@ -16,7 +16,7 @@ public class SyncServerTest {
 
     @Test
     public void getAllFileBlocksByFileName() {
-        ArrayList<String> milkywayFileBlocks = SyncServer.LOCALHOST.getAllFileBlocksByFileName("milkyway.jpeg");
+        ArrayList<String> milkywayFileBlocks = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName("milkyway.jpeg");
         for (String fileName: milkywayFileBlocks) {
             System.out.println(fileName);
         }

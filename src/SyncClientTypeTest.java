@@ -208,4 +208,16 @@ public class SyncClientTypeTest {
         Message retuMessage = SyncClientType.WINDOWS.removeDeletedFilesByOtherClients();
         assertEquals(true, retuMessage.isMessageSuccess());
     }
+
+    @Test
+    public void getFileBlocksToUploadForDeltaSync() {
+        // Mac
+        ArrayList<FileBlock> fileBlockToUpload = new ArrayList<>();
+        Message returnMsg = SyncClientType.MAC.getFileBlocksToUploadForDeltaSync(fileBlockToUpload);
+        System.out.println(returnMsg.getMessage());
+        assertEquals(true, returnMsg.isMessageSuccess());
+        for (FileBlock fileBlock: fileBlockToUpload) {
+            System.out.println(fileBlock.getFileBlockName() + " :: " + fileBlock.getFileCheckSum());
+        }
+    }
 }

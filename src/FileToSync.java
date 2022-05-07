@@ -72,7 +72,8 @@ public class FileToSync {
         final String METHOD_NAME = "getFileBlocks";
         Message returnMsg = new Message();
         int blockNum = 0;
-        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
+//        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
+        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_2_KB; // for testing with smaller files, change later
         byte[] buffer = new byte[fileBlockSize];
         String fileName = file.getName();
         int bytesRead = -1;
@@ -118,5 +119,9 @@ public class FileToSync {
             returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
         }
         return returnMsg;
+    }
+
+    public void addFileBlock(FileBlock fileBlock) {
+        this.fileBlockList.add(fileBlock);
     }
 }

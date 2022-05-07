@@ -47,7 +47,7 @@ public enum SyncServer {
         return serverName;
     }
 
-    public ArrayList<String> getAllFileBlocksByFileName(String fileName) {
+    public ArrayList<String> getAllFileBlockNamesByFileName(String fileName) {
         ArrayList<String> fileBlocks = new ArrayList<>();
         File serverFolder = new File(serverFolderPath);
         for (File f: serverFolder.listFiles()) {
@@ -57,5 +57,22 @@ public enum SyncServer {
             }
         }
         return fileBlocks;
+    }
+
+    public Message getAllFileBlocksByFileName(String fileName, ArrayList<FileBlock> fileBlockList) {
+        final String METHOD_NAME = "getAllFileBlocksByFileName";
+        Message returnMsg = new Message();
+        ArrayList<String> allFileBlocksOfTargetFile = getAllFileBlockNamesByFileName(fileName);
+        for (String fileBlockName: allFileBlocksOfTargetFile) {
+            FileBlock fileBlock = new FileBlock(serverFolderPath + fileBlockName);
+            returnMsg = fileBlock.generateCheckSum();
+            if (returnMsg.isMessageSuccess()) {
+                fileBlockList.add(fileBlock);
+            } else {
+                returnMsg.setErrorMessage("SyncServer", METHOD_NAME, "GenerateCheckSumError", returnMsg.getMessage());
+                break;
+            }
+        }
+        return returnMsg;
     }
 }

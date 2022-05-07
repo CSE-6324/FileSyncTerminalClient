@@ -16,6 +16,10 @@ public class FileBlock {
         this.blockNumber = blockNumber;
         this.fileBlock = fileBlock;
     }
+
+    public FileBlock(String fileBlockNameWithPath) {
+        this.fileBlock = new File(fileBlockNameWithPath);
+    }
     
     public Message generateCheckSum()  {
         final String METHOD_NAME = "getCheckSum";
