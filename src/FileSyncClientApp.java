@@ -26,13 +26,14 @@ public class FileSyncClientApp {
         System.exit(-1);
     }
 
-    private static void help() {
+    private static void printHelpPrompt() {
         System.out.println();
         System.out.println("app commands");
         System.out.println();
         System.out.println("suspend - to stop syncing files");
         System.out.println("resume - to start syncing files");
         System.out.println("status - to display sync status");
+        System.out.println("help - to display app commands");
         System.out.println("exit - to exit application");
         System.out.println();
         System.out.print("> ");
@@ -46,32 +47,35 @@ public class FileSyncClientApp {
         final String METHOD_NAME = "startApp";
         Message msg = new Message();
         try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));) {
-            WatchClientDir clientDir = new WatchClientDir(syncClient.getClientType());
-            Thread clientWatcherThread = new Thread(clientDir);
-            clientWatcherThread.start();
-
-            help();
+            startClientDirWatchService(syncClient);
+            printHelpPrompt();
             String userInput = stdIn.readLine().trim();
             while (true) {
                 if (userInput.equalsIgnoreCase("suspend")) {
-                    msg.printToTerminalFollowWithUserPrompt("TODO: suspend");
+                    msg.printToTerminalWithPrompt("TODO: suspend");
                 } else if (userInput.equalsIgnoreCase("resume")) {
-                    msg.printToTerminalFollowWithUserPrompt("TODO: resume");
+                    msg.printToTerminalWithPrompt("TODO: resume");
                 } else if (userInput.equalsIgnoreCase("status")) {
-                    msg.printToTerminalFollowWithUserPrompt("TODO: status");
+                    msg.printToTerminalWithPrompt("TODO: status");
                 } else if (userInput.equalsIgnoreCase("exit")) {
                     exitMsg();
                     break;
                 }  else {
-                    help();
+                    printHelpPrompt();
                 }
                 userInput = stdIn.readLine().trim();
             }
         } catch (IOException e) {
             //TODO: replace this with dump to file as needed
             msg.setErrorMessage(TAG, METHOD_NAME, "IOException", e.getMessage());
-            System.out.println(msg.getMessage());
+            msg.printToTerminal(msg.getMessage());
         }
         System.exit(-1);
+    }
+
+    private static void startClientDirWatchService(SyncClient syncClient) throws IOException {
+        WatchClientDir clientDir = new WatchClientDir(syncClient.getClientType());
+        Thread clientWatcherThread = new Thread(clientDir);
+        clientWatcherThread.start();
     }
 }

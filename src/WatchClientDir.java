@@ -63,11 +63,11 @@ public class WatchClientDir implements Runnable {
                     continue;
                 }
                 if (event.kind() == ENTRY_CREATE) {
-                    msg.printToTerminalFollowWithUserPrompt("File to Upload: " + child);
+                    msg.printToTerminalWithPrompt("File to Upload: " + child);
                 } else if (event.kind() == ENTRY_DELETE) {
-                    msg.printToTerminalFollowWithUserPrompt("File to Delete: " + child);
+                    msg.printToTerminalWithPrompt("File to Delete: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
-                    msg.printToTerminalFollowWithUserPrompt("File Modified: " + child);
+                    msg.printToTerminalWithPrompt("File Modified: " + child);
                 }
             }
             key.reset();

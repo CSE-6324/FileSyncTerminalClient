@@ -67,7 +67,11 @@ public class Message {
         setMessage("[Error] " + className + " @ " + methodName +"(): " + "(" + errorName + ") " + msg);
     }
 
-    public void printToTerminalFollowWithUserPrompt(String msg) {
+    public void printToTerminalWithPrompt(String msg) {
         System.out.print("\n" + msg + "\n\n> ");
+    }
+
+    public void printToTerminal(String msg) {
+        System.out.println(msg);
     }
 }
