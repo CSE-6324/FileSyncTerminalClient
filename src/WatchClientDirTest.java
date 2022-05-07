@@ -8,7 +8,8 @@ public class WatchClientDirTest {
     public void processEvents() {
         try {
             WatchClientDir macClient = new WatchClientDir(SyncClientType.MAC);
-            macClient.processEvents();
+            Thread clientWatcherThread = new Thread(macClient);
+            clientWatcherThread.start();
         } catch (Exception e) {
             System.out.println("Error: (Exception) " + e.getMessage());
         }

@@ -66,4 +66,8 @@ public class Message {
     public void setErrorMessage(String className, String methodName, String errorName, String msg) {
         setMessage("[Error] " + className + " @ " + methodName +"(): " + "(" + errorName + ") " + msg);
     }
+
+    public void printToTerminalFollowWithUserPrompt(String msg) {
+        System.out.print("\n" + msg + "\n\n> ");
+    }
 }
