@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 /**
  * @author sharif
  */
@@ -60,10 +62,12 @@ public class Message {
     }
 
     public void setErrorMessage(String className, String methodName, String msg) {
+        this.msgSuccess = false;
         setMessage("[Error] " + className + " @ " + methodName +"(): " + msg);
     }
 
     public void setErrorMessage(String className, String methodName, String errorName, String msg) {
+        this.msgSuccess = false;
         setMessage("[Error] " + className + " @ " + methodName +"(): " + "(" + errorName + ") " + msg);
     }
 

@@ -10,4 +10,7 @@ public class PrgUtility {
     public static final String CLIENT_FILE_BLOCKS_PATH = PrgUtility.PROJECT_FILE_PATH + "file_blocks/";
     public static final int FILE_BLOCK_SIZE_4_MB = 1024 * 1024 * 4;
     public static final int FILE_BLOCK_SIZE_2_KB = 1024 * 2;
+    public static final int TCP_PORT_NUM = 5555;
+    public static final int UDP_PORT_NUM = 7777;
+    public static final String HOST_NAME = "localhost";
 }

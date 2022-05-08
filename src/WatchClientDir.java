@@ -42,15 +42,14 @@ public class WatchClientDir implements Runnable {
                 key = dirWatcher.take();
             } catch (InterruptedException e) {
                 // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
-                System.out.println(TAG + " :: " + METHOD_NAME + " :: Error: (InterruptedException)" + e.getMessage());
+                msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: (InterruptedException)" + e.getMessage());
                 return;
             }
 
             Path dir = keys.get(key);
             if (dir == null) {
                 // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
-                System.out.println();
-                System.out.println(TAG + " :: " + METHOD_NAME + " :: Error: WatchKey not recognized!! Continuing to next event.");
+                msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: WatchKey not recognized!! Continuing to next event.");
                 continue;
             }
 
@@ -79,11 +78,12 @@ public class WatchClientDir implements Runnable {
     @Override
     public void run() {
         final String METHOD_NAME = "run";
+        Message msg = new Message();
         try {
             processEvents();
         } catch (IOException e) {
             // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
-            System.out.println(TAG + " :: " + METHOD_NAME + " :: Error: (IOException)" + e.getMessage());
+            msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: (IOException)" + e.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class WatchClientDir implements Runnable {
         FileToSync fileToSync = new FileToSync(newFile);
         msg = fileToSync.generateFileBlocksAndCheckSums();
         if (msg.isMessageSuccess()) {
-            msg.printToTerminal("File Blocks : ");
+            msg.printToTerminal("File Blocks :- ");
             for (FileBlock fb: fileToSync.getFileBlockList()) {
                 msg.printToTerminal(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
             }
