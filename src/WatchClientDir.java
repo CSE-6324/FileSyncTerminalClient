@@ -1,4 +1,5 @@
 import java.awt.event.MouseWheelEvent;
+import java.io.File;
 import java.nio.file.*;
 import java.io.IOException;
 
@@ -63,11 +64,12 @@ public class WatchClientDir implements Runnable {
                     continue;
                 }
                 if (event.kind() == ENTRY_CREATE) {
-                    msg.printToTerminalWithPrompt("File to Upload: " + child);
+                    msg.printToTerminal("File to Upload: " + child);
+                    msg = processFileCreateEvent(child.toFile());
                 } else if (event.kind() == ENTRY_DELETE) {
-                    msg.printToTerminalWithPrompt("File to Delete: " + child);
+                    msg.printToTerminal("File to Delete: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
-                    msg.printToTerminalWithPrompt("File Modified: " + child);
+                    msg.printToTerminal("File Modified: " + child);
                 }
             }
             key.reset();
@@ -83,5 +85,23 @@ public class WatchClientDir implements Runnable {
             // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
             System.out.println(TAG + " :: " + METHOD_NAME + " :: Error: (IOException)" + e.getMessage());
         }
+    }
+
+    public Message processFileCreateEvent(File newFile) {
+        final String METHOD_NAME = "processFileCreateEvent";
+        Message msg;
+        FileToSync fileToSync = new FileToSync(newFile);
+        msg = fileToSync.generateFileBlocksAndCheckSums();
+        if (msg.isMessageSuccess()) {
+            msg.printToTerminal("File Blocks : ");
+            for (FileBlock fb: fileToSync.getFileBlockList()) {
+                msg.printToTerminal(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
+            }
+            msg.printToTerminal("");
+        } else {
+            msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
+            msg.printToTerminal(msg.getMessage());
+        }
+        return msg;
     }
 }

@@ -23,25 +23,25 @@ public class FileSyncClientApp {
     }
 
     private static void usageError() {
-        System.out.println("Usage: java FileSyncClientApp [win/w/mac/m]");
+        System.out.println("> Usage: java FileSyncClientApp [win/w/mac/m]");
         System.exit(-1);
     }
 
     private static void printHelpPrompt() {
-        System.out.println();
-        System.out.println(clientName + " client app commands");
-        System.out.println();
-        System.out.println("suspend - to stop syncing files");
-        System.out.println("resume - to start syncing files");
-        System.out.println("status - to display sync status");
-        System.out.println("help - to display app commands");
-        System.out.println("exit - to exit application");
-        System.out.println();
+        System.out.println("> ");
+        System.out.println("> " + clientName + " client app commands");
+        System.out.println("> ");
+        System.out.println("> suspend - to stop syncing files");
+        System.out.println("> resume - to start syncing files");
+        System.out.println("> status - to display sync status");
+        System.out.println("> help - to display app commands");
+        System.out.println("> exit - to exit application");
+        System.out.println("> ");
         System.out.print("> ");
     }
 
     private static void exitMsg() {
-        System.out.println("Good bye! Take care!");
+        System.out.println("> Good bye! Take care!\n");
     }
 
     private static void startApp(SyncClient syncClient) {
@@ -53,11 +53,11 @@ public class FileSyncClientApp {
             String userInput = stdIn.readLine().trim();
             while (true) {
                 if (userInput.equalsIgnoreCase("suspend")) {
-                    msg.printToTerminalWithPrompt("TODO: suspend");
+                    msg.printToTerminal("TODO: suspend");
                 } else if (userInput.equalsIgnoreCase("resume")) {
-                    msg.printToTerminalWithPrompt("TODO: resume");
+                    msg.printToTerminal("TODO: resume");
                 } else if (userInput.equalsIgnoreCase("status")) {
-                    msg.printToTerminalWithPrompt("TODO: status");
+                    msg.printToTerminal("TODO: status");
                 } else if (userInput.equalsIgnoreCase("exit")) {
                     exitMsg();
                     break;
