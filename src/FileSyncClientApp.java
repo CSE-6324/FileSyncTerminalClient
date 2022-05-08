@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class FileSyncClientApp {
     private static final String TAG = "FileSyncClientApp";
-
+    private static String clientName;
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
         if (args.length != 1) {
             usageError();
@@ -16,6 +16,7 @@ public class FileSyncClientApp {
             if (syncClient.getClientType() == SyncClientType.UNKNOWN) {
                 usageError();
             } else {
+                clientName = syncClient.getClientType().getClientName();
                 startApp(syncClient);
             }
         }
@@ -28,7 +29,7 @@ public class FileSyncClientApp {
 
     private static void printHelpPrompt() {
         System.out.println();
-        System.out.println("app commands");
+        System.out.println(clientName + " client app commands");
         System.out.println();
         System.out.println("suspend - to stop syncing files");
         System.out.println("resume - to start syncing files");
