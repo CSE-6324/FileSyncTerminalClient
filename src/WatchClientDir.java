@@ -14,11 +14,13 @@ public class WatchClientDir implements Runnable {
     private WatchService dirWatcher;
     private HashMap<WatchKey, Path> keys;
     private SyncClientType syncClient;
+    private TCPClientSocket tcpClientSocketConn;
 
-    public WatchClientDir(SyncClientType syncClient) throws IOException {
+    public WatchClientDir(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
         this.syncClient = syncClient;
         this.dirWatcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<>();
+        this.tcpClientSocketConn = tcpClientSocketConn;
         registerClientDir(Paths.get(this.syncClient.getLocalFilePath()));
     }
 
@@ -41,14 +43,12 @@ public class WatchClientDir implements Runnable {
             try {
                 key = dirWatcher.take();
             } catch (InterruptedException e) {
-                // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
                 msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: (InterruptedException)" + e.getMessage());
                 return;
             }
 
             Path dir = keys.get(key);
             if (dir == null) {
-                // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
                 msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: WatchKey not recognized!! Continuing to next event.");
                 continue;
             }
@@ -82,7 +82,6 @@ public class WatchClientDir implements Runnable {
         try {
             processEvents();
         } catch (IOException e) {
-            // TODO: Need to dump this to a file after all main feature dev work. Display a user-friendly msg later.
             msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: (IOException)" + e.getMessage());
         }
     }
@@ -98,6 +97,13 @@ public class WatchClientDir implements Runnable {
                 msg.printToTerminal(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
             }
             msg.printToTerminal("");
+            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", newFile.getName()));
+            if (msg.isMessageSuccess()) {
+                msg.printToTerminal("server response: " + msg.getMessage());
+            } else {
+                msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
+                msg.printToTerminal(msg.getMessage());
+            }
         } else {
             msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
             msg.printToTerminal(msg.getMessage());

@@ -7,7 +7,7 @@ public class WatchClientDirTest {
     @Test
     public void processEvents() {
         try {
-            WatchClientDir macClient = new WatchClientDir(SyncClientType.MAC);
+            WatchClientDir macClient = new WatchClientDir(SyncClientType.MAC, null);
             Thread clientWatcherThread = new Thread(macClient);
             clientWatcherThread.start();
         } catch (Exception e) {

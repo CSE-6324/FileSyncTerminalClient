@@ -80,7 +80,7 @@ public class TCPClientSocket {
         return listening != null && listening.equalsIgnoreCase("yes");
     }
 
-    public String tcpRequest(String request, String requestValue) {
-        return request + "=" + requestValue;
+    public String tcpRequest(String clientName, String request, String requestValue) {
+        return clientName + "=" + request + "=" + requestValue;
     }
 }

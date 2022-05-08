@@ -25,11 +25,11 @@ public class FileSyncClientApp {
         TCPClientSocket tcpClientSocketConn = new TCPClientSocket(PrgUtility.HOST_NAME, PrgUtility.TCP_PORT_NUM, syncClientType);
         Message msg = tcpClientSocketConn.connectToServer();
         if (tcpClientSocketConn.isConnectedToServer()) {
-            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest("handshake-client", syncClientType.getClientName()));
+            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClientType.getClientName(),"handshake-client", syncClientType.getClientName()));
             if (msg.isMessageSuccess()) {
                 System.out.println("> " + syncClientType.getClientName() + " client app connected to server");
                 System.out.println("> server response: " + msg.getMessage());
-                startApp(syncClientType);
+                startApp(syncClientType, tcpClientSocketConn);
             } else {
                 System.out.println("> unable to make TCP connection with server");
                 System.out.println("> client-server-handshake-failed");
@@ -82,11 +82,11 @@ public class FileSyncClientApp {
         System.out.println("> Good bye! Take care!\n");
     }
 
-    private static void startApp(SyncClientType syncClientType) {
+    private static void startApp(SyncClientType syncClientType, TCPClientSocket tcpClientSocketConn) {
         final String METHOD_NAME = "startApp";
         Message msg = new Message();
         try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));) {
-            startClientDirWatchService(syncClientType);
+            startClientDirWatchService(syncClientType, tcpClientSocketConn);
             printHelpPrompt();
             String userInput = stdIn.readLine().trim();
             while (true) {
@@ -112,8 +112,8 @@ public class FileSyncClientApp {
         System.exit(-1);
     }
 
-    private static void startClientDirWatchService(SyncClientType syncClient) throws IOException {
-        WatchClientDir clientDir = new WatchClientDir(syncClient);
+    private static void startClientDirWatchService(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
+        WatchClientDir clientDir = new WatchClientDir(syncClient, tcpClientSocketConn);
         Thread clientWatcherThread = new Thread(clientDir);
         clientWatcherThread.start();
     }
