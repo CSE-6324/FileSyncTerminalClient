@@ -42,16 +42,15 @@ public class WatchClientDir implements Runnable {
             try {
                 key = dirWatcher.take();
             } catch (InterruptedException e) {
-                msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: (InterruptedException)" + e.getMessage());
+                msg.setErrorMessage(TAG, METHOD_NAME, "InterruptedException", e.getMessage());
+                msg.printToTerminal(msg.getMessage());
                 return;
             }
-
             Path dir = keys.get(key);
             if (dir == null) {
-                msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: WatchKey not recognized!! Continuing to next event.");
+                msg.printToTerminal( "watchKey not recognized! continuing to next event");
                 continue;
             }
-
             for (WatchEvent<?> event: key.pollEvents()) {
                 WatchEvent<Path> ev = cast(event);
                 Path name = ev.context();
@@ -62,12 +61,12 @@ public class WatchClientDir implements Runnable {
                     continue;
                 }
                 if (event.kind() == ENTRY_CREATE) {
-                    msg.printToTerminal("File to Upload: " + child);
+                    msg.printToTerminal("file to upload: " + child);
                     msg = processFileCreateEvent(child.toFile());
                 } else if (event.kind() == ENTRY_DELETE) {
-                    msg.printToTerminal("File to Delete: " + child);
+                    msg.printToTerminal("file to delete: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
-                    msg.printToTerminal("File Modified: " + child);
+                    msg.printToTerminal("file modified: " + child);
                 }
             }
             key.reset();
@@ -81,39 +80,52 @@ public class WatchClientDir implements Runnable {
         try {
             processEvents();
         } catch (IOException e) {
-            msg.printToTerminal(TAG + " :: " + METHOD_NAME + " :: Error: (IOException)" + e.getMessage());
+            msg.setErrorMessage(TAG, METHOD_NAME, "IOException", e.getMessage());
+            msg.printToTerminal(msg.getMessage());
         }
     }
 
     public Message processFileCreateEvent(File newFile) {
         final String METHOD_NAME = "processFileCreateEvent";
         Message msg;
-        String serverResponse;
+        String fileBlocksUploaded = "file blocks uploaded to server" + System.lineSeparator() + "> ";
         FileToSync fileToSync = new FileToSync(newFile);
         msg = fileToSync.generateFileBlocksAndCheckSums();
         if (msg.isMessageSuccess()) {
             msg.printToTerminal("File Blocks :- ");
             for (FileBlock fb: fileToSync.getFileBlockList()) {
-                msg.printToTerminal(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
-                msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", newFile.getName()));
-                if (msg.isMessageSuccess()) {
-                    serverResponse = msg.getMessage();
-                    msg.printToTerminal("server response: " + serverResponse);
-
-                    int udpPort = Integer.parseInt(serverResponse.split("=")[1]);
-                    UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fb.getFileBlock());
-                    Thread fileSendThread = new Thread(udpFileSend);
-                    fileSendThread.start();
-                } else {
-                    msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
-                    msg.printToTerminal(msg.getMessage());
-                }
+                uploadFileBlockToServer(fb);
+                fileBlocksUploaded += fb.getFileBlockName() + " :: " + fb.getFileCheckSum() + System.lineSeparator() + "> ";
             }
-            msg.printToTerminal("");
+            msg.printToTerminal(fileBlocksUploaded);
         } else {
-            msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
+            msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGenerateFileBlocksAndCheckSum", msg.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
         return msg;
+    }
+
+    private void uploadFileBlockToServer(FileBlock fileBlock) {
+        final String METHOD_NAME = "uploadFileBlock";
+        Message msg;
+        String serverResponse;
+        msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", fileBlock.getFileBlockName()));
+        if (msg.isMessageSuccess()) {
+            serverResponse = msg.getMessage();
+            msg.printToTerminal("server response: " + serverResponse);
+
+            int udpPort = Integer.parseInt(serverResponse.split("=")[1]);
+            UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fileBlock.getFile());
+            Thread fileSendThread = new Thread(udpFileSend);
+            try {
+                fileSendThread.start();
+            } catch (Exception e) {
+                msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendFileToServer", e.getMessage());
+                msg.printToTerminal(msg.getMessage());
+            }
+        } else {
+            msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendTCPRequest",msg.getMessage());
+            msg.printToTerminal(msg.getMessage());
+        }
     }
 }

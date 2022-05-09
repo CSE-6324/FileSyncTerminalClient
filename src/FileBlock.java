@@ -59,7 +59,7 @@ public class FileBlock {
         return this.checkSum;
     }
 
-    public File getFileBlock() {
+    public File getFile() {
         return this.fileBlock;
     }
 
