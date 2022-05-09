@@ -30,7 +30,7 @@ public enum SyncServer {
         return fileList;
     }
 
-    private String getFileNameFromFileBlockName(String fileBlockName) {
+    public String getFileNameFromFileBlockName(String fileBlockName) {
         // this will only work if the file block name has the
         // following format: fileName_block#.fileExt
         // eg: milkyway_001.jpeg

@@ -10,10 +10,10 @@ import java.util.HashMap;
 
 public class WatchClientDir implements Runnable {
     private static final String TAG = "WatchClientDir";
-    private WatchService dirWatcher;
-    private HashMap<WatchKey, Path> keys;
-    private SyncClientType syncClient;
-    private TCPClientSocket tcpClientSocketConn;
+    private final WatchService dirWatcher;
+    private final HashMap<WatchKey, Path> keys;
+    private final SyncClientType syncClient;
+    private final TCPClientSocket tcpClientSocketConn;
 
     public WatchClientDir(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
         this.syncClient = syncClient;
@@ -33,8 +33,8 @@ public class WatchClientDir implements Runnable {
         keys.put(key, dir);
     }
 
-    private void processEvents() throws IOException {
-        final String METHOD_NAME = "processEvents";
+    private void processFileEventsInClientDir() throws IOException {
+        final String METHOD_NAME = "processFileEventsInClientDir";
         Message msg = new Message();
         for (;;) {
             // wait for key to be signalled
@@ -61,12 +61,14 @@ public class WatchClientDir implements Runnable {
                     continue;
                 }
                 if (event.kind() == ENTRY_CREATE) {
-                    msg.printToTerminal("file to upload: " + child);
-                    msg = processFileCreateEvent(child.toFile());
+                    msg.printToTerminal("file created in client folder: " + child);
+                    if (!(new File(SyncServer.LOCALHOST.getServerFolderPath(), child.toFile().getName()).exists())) {
+                        msg = startFileUploadTask(child.toFile());
+                    }
                 } else if (event.kind() == ENTRY_DELETE) {
-                    msg.printToTerminal("file to delete: " + child);
+                    msg.printToTerminal("file deleted in client folder: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
-                    msg.printToTerminal("file modified: " + child);
+                    msg.printToTerminal("file modified in client folder: " + child);
                 }
             }
             key.reset();
@@ -78,15 +80,15 @@ public class WatchClientDir implements Runnable {
         final String METHOD_NAME = "run";
         Message msg = new Message();
         try {
-            processEvents();
+            processFileEventsInClientDir();
         } catch (IOException e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "IOException", e.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
     }
 
-    public Message processFileCreateEvent(File newFile) {
-        final String METHOD_NAME = "processFileCreateEvent";
+    public Message startFileUploadTask(File newFile) {
+        final String METHOD_NAME = "processFileCreateEventInClientDir";
         Message msg;
         String fileBlocksUploaded = "file blocks uploaded to server" + System.lineSeparator() + "> ";
         FileToSync fileToSync = new FileToSync(newFile);
@@ -105,7 +107,7 @@ public class WatchClientDir implements Runnable {
         return msg;
     }
 
-    private void uploadFileBlockToServer(FileBlock fileBlock) {
+    private synchronized void uploadFileBlockToServer(FileBlock fileBlock) {
         final String METHOD_NAME = "uploadFileBlock";
         Message msg;
         String serverResponse;

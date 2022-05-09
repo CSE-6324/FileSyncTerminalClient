@@ -19,9 +19,10 @@ public class FileSyncClientApp {
             usageErrorInvalidClientType();
             System.exit(-1);
         }
-        connectToServerAndStartApp(syncClientType);
+        TCPClientSocket tcpClientSocketConn = connectToServer(syncClientType);
+        startApp(syncClientType, tcpClientSocketConn);
     }
-    private static void connectToServerAndStartApp(SyncClientType syncClientType) {
+    private static TCPClientSocket connectToServer(SyncClientType syncClientType) {
         TCPClientSocket tcpClientSocketConn = new TCPClientSocket(PrgUtility.HOST_NAME, PrgUtility.TCP_PORT_NUM, syncClientType);
         Message msg = tcpClientSocketConn.connectToServer();
         if (tcpClientSocketConn.isConnectedToServer()) {
@@ -29,7 +30,6 @@ public class FileSyncClientApp {
             if (msg.isMessageSuccess()) {
                 System.out.println("> " + syncClientType.getClientName() + " client app connected to server");
                 System.out.println("> server response: " + msg.getMessage());
-                startApp(syncClientType, tcpClientSocketConn);
             } else {
                 System.out.println("> unable to make TCP connection with server");
                 System.out.println("> client-server-handshake-failed");
@@ -41,6 +41,7 @@ public class FileSyncClientApp {
             System.out.println("> " + msg.getMessage());
             System.exit(-1);
         }
+        return tcpClientSocketConn;
     }
 
     private static boolean validClientAppArgs(String[] args) {
@@ -87,6 +88,7 @@ public class FileSyncClientApp {
         Message msg = new Message();
         try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));) {
             startClientDirWatchService(syncClientType, tcpClientSocketConn);
+            startServerDirWatchService(syncClientType, tcpClientSocketConn);
             printHelpPrompt();
             String userInput = stdIn.readLine().trim();
             while (true) {
@@ -113,8 +115,8 @@ public class FileSyncClientApp {
     }
 
     private static void startClientDirWatchService(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
-        WatchClientDir clientDir = new WatchClientDir(syncClient, tcpClientSocketConn);
-        Thread clientWatcherThread = new Thread(clientDir);
+        WatchClientDir clientWatchDir = new WatchClientDir(syncClient, tcpClientSocketConn);
+        Thread clientWatcherThread = new Thread(clientWatchDir);
         clientWatcherThread.start();
     }
 
@@ -126,5 +128,11 @@ public class FileSyncClientApp {
         } else {
             return SyncClientType.UNKNOWN;
         }
+    }
+
+    private static void startServerDirWatchService(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
+        WatchServerDir serverWatchDir = new WatchServerDir(syncClient, tcpClientSocketConn);
+        Thread serverWatcherThread = new Thread(serverWatchDir);
+        serverWatcherThread.start();
     }
 }

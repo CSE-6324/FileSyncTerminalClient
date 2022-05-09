@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -86,5 +87,23 @@ public class TCPClientSocket {
 
     public String tcpRequest(String clientName, String request, String requestValue) {
         return clientName + "=" + request + "=" + requestValue;
+    }
+
+    public String tcpRequest(String clientName, String request1, String request2, String requestValue1, String requestValue2) {
+        return clientName + "=" + request1 + "=" + requestValue1 + "=" + request2 + "=" + requestValue2;
+    }
+
+    public int getFreeLocalPort() {
+        final String METHOD_NAME = "getFreePort";
+        Message msg = new Message();
+
+        try (ServerSocket socket = new ServerSocket(0)) {
+            int portNum = socket.getLocalPort();
+            return portNum;
+        } catch (IOException e) {
+            msg.setErrorMessage(TAG, METHOD_NAME, "IOException" + e.getMessage());
+            msg.printToTerminal("");
+        }
+        throw new IllegalStateException("could not find a free local port");
     }
 }
