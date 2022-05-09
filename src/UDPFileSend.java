@@ -48,6 +48,7 @@ public class UDPFileSend implements Runnable {
         } catch (Exception ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -96,9 +97,10 @@ public class UDPFileSend implements Runnable {
                     socket.receive(ackPack);
                     ackSeq = ((ack[0] & 0xff) << 8) + (ack[1] & 0xff); // figuring the seq num
                     ackReceived = true; // we received the ack
-                } catch (SocketTimeoutException e) {
+                } catch (SocketTimeoutException ex) {
                     consoleMsg.printToTerminal("socked timed out waiting for ack");
                     ackReceived = false; // we did not receive the ack
+                    ex.printStackTrace();
                 }
 
                 // if the packet was received correctly next packet can be sent
@@ -131,6 +133,7 @@ public class UDPFileSend implements Runnable {
         } catch (IOException ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "IOException", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());
+            ex.printStackTrace();
         }
         return bArray;
     }

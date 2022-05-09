@@ -89,21 +89,27 @@ public class WatchClientDir implements Runnable {
 
     public Message startFileUploadTask(File newFile) {
         final String METHOD_NAME = "processFileCreateEventInClientDir";
-        Message msg;
+        Message msg = new Message();
         String fileBlocksUploaded = "file blocks uploaded to server" + System.lineSeparator() + "> ";
         FileToSync fileToSync = new FileToSync(newFile);
-        msg = fileToSync.generateFileBlocksAndCheckSums();
-        if (msg.isMessageSuccess()) {
-            msg.printToTerminal("File Blocks :- ");
-            for (FileBlock fb: fileToSync.getFileBlockList()) {
-                uploadFileBlockToServer(fb);
-                fileBlocksUploaded += fb.getFileBlockName() + " :: " + fb.getFileCheckSum() + System.lineSeparator() + "> ";
+        try {
+            msg = fileToSync.generateFileBlocksAndCheckSums();
+            if (msg.isMessageSuccess()) {
+                msg.printToTerminal("File Blocks :- ");
+                for (FileBlock fb: fileToSync.getFileBlockList()) {
+                    uploadFileBlockToServer(fb);
+                    fileBlocksUploaded += fb.getFileBlockName() + " :: " + fb.getFileCheckSum() + System.lineSeparator() + "> ";
+                }
+                msg.printToTerminal(fileBlocksUploaded);
+            } else {
+                msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGenerateFileBlocksAndCheckSum", msg.getMessage());
+                msg.printToTerminal(msg.getMessage());
             }
-            msg.printToTerminal(fileBlocksUploaded);
-        } else {
-            msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGenerateFileBlocksAndCheckSum", msg.getMessage());
+        } catch (Exception e) {
+            msg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
+
         return msg;
     }
 

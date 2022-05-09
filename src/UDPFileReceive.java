@@ -13,7 +13,7 @@ import java.net.InetAddress;
 public class UDPFileReceive implements Runnable {
     private static final String TAG = "UDPFileReceive";
     private final int udpPortNum;
-    private final String fileReceiveFolder;
+    private String fileReceiveFolder;
     private volatile boolean suspendFileReceive;
 
     public UDPFileReceive(int udpPortNum, String fileReceiveFolder) {
@@ -29,19 +29,20 @@ public class UDPFileReceive implements Runnable {
             byte[] receiveFileName = new byte[1024]; // where we store the data of datagram
             DatagramPacket receiveFileNamePacket = new DatagramPacket(receiveFileName, receiveFileName.length);
             socket.receive(receiveFileNamePacket);
-            msg.printToTerminal("receiving file name");
+            msg.printToTerminal("receiving file name: ");
             byte[] data = receiveFileNamePacket.getData();
             String fileName = new String(data, 0, receiveFileNamePacket.getLength());
             String[] fileNameTokens = fileName.split("/");
             fileName = fileNameTokens[fileNameTokens.length-1];
 
-            msg.printToTerminal("creating file");
+            msg.printToTerminal("creating file: " + fileName);
             File file = new File(this.fileReceiveFolder + "/" + fileName);
             FileOutputStream outToFile = new FileOutputStream(file);
 
             receiveFile(outToFile, socket);
+            outToFile.close();
         } catch (Exception ex) {
-            msg.setErrorMessage(TAG, METHOD_NAME, "Exception" + ex.getMessage());
+            msg.setErrorMessage(TAG, METHOD_NAME, "Exception",  ex.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
     }

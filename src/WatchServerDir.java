@@ -59,7 +59,10 @@ public class WatchServerDir implements Runnable {
                 }
                 if (event.kind() == ENTRY_CREATE) {
                     msg.printToTerminal("file created in server folder: " + child);
-                    msg = startFileDownloadTask(child.toFile());
+                    String fileName = SyncServer.LOCALHOST.getFileNameFromFileBlockName(child.toFile().getName());
+                    if (!(new File(syncClient.getLocalFilePath(), fileName).exists())) {
+                        msg = startFileDownloadTask(child.toFile());
+                    }
                 } else if (event.kind() == ENTRY_DELETE) {
                     msg.printToTerminal("file deleted in server folder: " + child);
                     msg.printToTerminal("TODO");
@@ -85,10 +88,7 @@ public class WatchServerDir implements Runnable {
         final String METHOD_NAME = "processFileBlockCreateEventInServerDir";
         Message msg = new Message();
         try {
-            String fileName = SyncServer.LOCALHOST.getFileNameFromFileBlockName(fileBlock.getName());
-            if (!(new File(syncClient.getLocalFilePath(), fileName).exists())) {
-                downloadFileBlockToClient(fileBlock);
-            }
+            downloadFileBlockToClient(fileBlock);
         } catch (Exception e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "UnableToDownloadFileToClient", msg.getMessage());
             msg.printToTerminal(msg.getMessage());
@@ -98,24 +98,34 @@ public class WatchServerDir implements Runnable {
 
     private synchronized void downloadFileBlockToClient(File fileBlock) {
         final String METHOD_NAME = "downloadFileBlockToClient";
-        Message msg;
+        Message msg = new Message();
         String serverResponse;
-        int udpPort = tcpClientSocketConn.getFreeLocalPort();
-        msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(), "download", "udp_port", fileBlock.getName(), (udpPort + "")));
-        if (msg.isMessageSuccess()) {
-            serverResponse = msg.getMessage();
-            msg.printToTerminal("server response: " + serverResponse);
-            if (serverResponse.equalsIgnoreCase("ok")) {
-                UDPFileReceive udpFileReceive = new UDPFileReceive(udpPort, syncClient.getLocalFilePath());
-                Thread fileReceiveThread = new Thread(udpFileReceive);
-                fileReceiveThread.start();
+        try {
+            int udpPort = tcpClientSocketConn.getFreeLocalPort();
+            UDPFileReceive udpFileReceive = new UDPFileReceive(udpPort, syncClient.getLocalFilePath());
+            Thread fileReceiveThread = new Thread(udpFileReceive);
+            fileReceiveThread.start();
+
+            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(), "download", "udp_port", fileBlock.getName(), (udpPort + "")));
+            if (msg.isMessageSuccess()) {
+                serverResponse = msg.getMessage();
+                msg.printToTerminal("server response: " + serverResponse);
+                String[] serverResponseTokens = serverResponse.split("=");
+                serverResponse = serverResponseTokens[1];
+                if (serverResponse.equalsIgnoreCase("ok")) {
+                    // TODO
+                } else {
+                    msg.setErrorMessage(TAG, METHOD_NAME, "ServerDownloadRequestIsNotOK", msg.getMessage());
+                    msg.printToTerminal(msg.getMessage());
+                }
             } else {
-                msg.setErrorMessage(TAG, METHOD_NAME, "ServerDownloadRequestIsNotOK", msg.getMessage());
+                msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendTCPRequest",msg.getMessage());
                 msg.printToTerminal(msg.getMessage());
             }
-        } else {
-            msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendTCPRequest",msg.getMessage());
+        } catch (Exception e) {
+            msg.setErrorMessage(TAG, METHOD_NAME, "Exception", msg.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
+
     }
 }
