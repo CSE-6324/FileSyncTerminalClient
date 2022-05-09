@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @author sharif
+ */
+
 public class FileBlock {
     private static final String TAG = "FileBlock";
 

@@ -1,6 +1,10 @@
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * @author sharif
+ */
+
 public enum SyncClientType {
     MAC ("mac", "/Users/sudiptasharif/repos/FileSyncer/project_files/mac_files/"),
     WINDOWS ("windows", "/Users/sudiptasharif/repos/FileSyncer/project_files/win_files/"),

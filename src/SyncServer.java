@@ -1,6 +1,10 @@
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * @author sharif
+ */
+
 public enum SyncServer {
     LOCALHOST ("localhost", "/Users/sudiptasharif/repos/FileSyncer/project_files/server_files/");
 

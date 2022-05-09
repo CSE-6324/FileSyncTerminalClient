@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @author sharif
+ */
+
 public class PrgUtility {
     public static final String PROJECT_FILE_PATH = "/Users/sudiptasharif/repos/FileSyncer/project_files/";
     public static final String CLIENT_FILE_BLOCKS_PATH = PrgUtility.PROJECT_FILE_PATH + "file_blocks/";

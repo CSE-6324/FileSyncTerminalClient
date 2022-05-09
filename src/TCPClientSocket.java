@@ -5,6 +5,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * @author sharif
+ */
+
 public class TCPClientSocket {
     private static final String TAG = "TCPClientSocket";
     private Socket socket;

@@ -1,13 +1,12 @@
-import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.nio.file.*;
 import java.io.IOException;
-
 import static java.nio.file.StandardWatchEventKinds.*;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+
+/**
+ * @author sharif
+ */
 
 public class WatchClientDir implements Runnable {
     private static final String TAG = "WatchClientDir";
@@ -89,21 +88,28 @@ public class WatchClientDir implements Runnable {
     public Message processFileCreateEvent(File newFile) {
         final String METHOD_NAME = "processFileCreateEvent";
         Message msg;
+        String serverResponse;
         FileToSync fileToSync = new FileToSync(newFile);
         msg = fileToSync.generateFileBlocksAndCheckSums();
         if (msg.isMessageSuccess()) {
             msg.printToTerminal("File Blocks :- ");
             for (FileBlock fb: fileToSync.getFileBlockList()) {
                 msg.printToTerminal(fb.getFileBlockName() + " :: " + fb.getFileCheckSum());
+                msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", newFile.getName()));
+                if (msg.isMessageSuccess()) {
+                    serverResponse = msg.getMessage();
+                    msg.printToTerminal("server response: " + serverResponse);
+
+                    int udpPort = Integer.parseInt(serverResponse.split("=")[1]);
+                    UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fb.getFileBlock());
+                    Thread fileSendThread = new Thread(udpFileSend);
+                    fileSendThread.start();
+                } else {
+                    msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
+                    msg.printToTerminal(msg.getMessage());
+                }
             }
             msg.printToTerminal("");
-            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", newFile.getName()));
-            if (msg.isMessageSuccess()) {
-                msg.printToTerminal("server response: " + msg.getMessage());
-            } else {
-                msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
-                msg.printToTerminal(msg.getMessage());
-            }
         } else {
             msg.setErrorMessage(TAG, METHOD_NAME, msg.getMessage());
             msg.printToTerminal(msg.getMessage());
