@@ -66,18 +66,18 @@ public class WatchClientDir implements Runnable {
                 if (event.kind() == ENTRY_CREATE) {
                     msg.logMsgToFile("file created in client folder: " + child);
                     String fileName = child.toFile().getName();
-                    if (!(new File(SyncServer.LOCALHOST.getServerFolderPath(), fileName).exists())) {
-                        msg = startFileUploadTask(child.toFile());
+                    if (!PrgUtility.isFileABlockFile(fileName)) {
+                        startFileUploadTask(child.toFile());
                     }
-//                    } else {
-//                        fileName = syncClient.getFileNameFromFileBlockName(fileName);
-//                        ArrayList<String> fileBlockNameListInServer = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
-//                        ArrayList<String> fileBlockNameListInClient = syncClient.getAllFileBlockNamesByFileName(fileName);
-//
-//                        if (fileBlockNameListInClient.size() == fileBlockNameListInServer.size()) {
-//                            syncClient.mergeFileBlocks(fileName, fileBlockNameListInClient);
-//                        }
-//                    }
+                    else if (PrgUtility.isFileABlockFile(fileName)){
+                        fileName = PrgUtility.getFileNameFromFileBlockName(fileName);
+                        ArrayList<String> fileBlockNameListInServer = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
+                        ArrayList<String> fileBlockNameListInClient = syncClient.getAllFileBlockNamesByFileName(fileName);
+
+                        if (fileBlockNameListInClient.size() == fileBlockNameListInServer.size()) {
+                            syncClient.mergeFileBlocks(fileName, fileBlockNameListInClient);
+                        }
+                    }
                 } else if (event.kind() == ENTRY_DELETE) {
                     msg.logMsgToFile("file deleted in client folder: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
@@ -100,8 +100,8 @@ public class WatchClientDir implements Runnable {
         }
     }
 
-    public synchronized Message startFileUploadTask(File newFile) {
-        final String METHOD_NAME = "processFileCreateEventInClientDir";
+    public synchronized void startFileUploadTask(File newFile) {
+        final String METHOD_NAME = "startFileUploadTask";
         Message msg = new Message();
         String fileBlocksUploaded = "file blocks uploaded to server" + System.lineSeparator() + "> ";
         FileToSync fileToSync = new FileToSync(newFile);
@@ -122,11 +122,10 @@ public class WatchClientDir implements Runnable {
             msg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
-        return msg;
     }
 
     private synchronized void uploadFileBlockToServer(FileBlock fileBlock) {
-        final String METHOD_NAME = "uploadFileBlock";
+        final String METHOD_NAME = "uploadFileBlockToServer";
         Message msg;
         String serverResponse;
         msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", fileBlock.getFileBlockName()));
@@ -156,4 +155,6 @@ public class WatchClientDir implements Runnable {
     public void resumeAllOperation() {
         suspendAllOperation = false;
     }
+
+
 }

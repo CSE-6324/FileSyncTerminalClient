@@ -200,19 +200,6 @@ public enum SyncClientType {
         return returnMsg;
     }
 
-    public String getFileNameFromFileBlockName(String fileBlockName) {
-        // this will only work if the file block name has the
-        // following format: fileName_block#.fileExt
-        // eg: milkyway_001.jpeg
-        String fileName = "";
-        String[] fileBlockNameTokens = fileBlockName.split("\\.");
-        String fileExt = fileBlockNameTokens[1];
-        String fileNameWithBlockNum = fileBlockNameTokens[0];
-        String[] fileNameTokens = fileNameWithBlockNum.split("_");
-        fileName = fileNameTokens[0] + "." + fileExt;
-        return fileName;
-    }
-
     public ArrayList<String> getAllFileBlockNamesByFileName(String fileName) {
         ArrayList<String> fileBlocks = new ArrayList<>();
         File serverFolder = new File(localFilePath);

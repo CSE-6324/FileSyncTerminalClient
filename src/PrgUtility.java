@@ -43,4 +43,41 @@ public class PrgUtility {
         }
         return answer;
     }
+
+    public static boolean isFileABlockFile(String fileName) {
+        boolean answer = false;
+        Message msg = new Message();
+        if (fileName != null && fileName.length() > 0) {
+            String[] fileBlockNameTokens = fileName.split("\\.");
+            if (fileBlockNameTokens.length == 2) {
+                String[] fileBlockTokens = fileBlockNameTokens[0].split("_");
+                if (fileBlockTokens.length == 2) {
+                    try {
+                        int blockNum = Integer.parseInt(fileBlockTokens[1]);
+                        answer = true;
+                    } catch (Exception e) {
+                        msg.logMsgToFile(fileName + "is not a valid file block name");
+                    }
+                }
+            }
+        }
+        return answer;
+    }
+
+    public static String getFileNameFromFileBlockName(String fileBlockName) {
+        // this will only work if the file block name has the
+        // following format: fileName_block#.fileExt
+        // eg: milkyway_001.jpeg
+        String fileName = "";
+        if (fileBlockName!= null && fileBlockName.length() > 0) {
+            String[] fileBlockNameTokens = fileBlockName.split("\\.");
+            if (fileBlockNameTokens.length == 2) {
+                String fileExt = fileBlockNameTokens[1];
+                String fileNameWithBlockNum = fileBlockNameTokens[0];
+                String[] fileNameTokens = fileNameWithBlockNum.split("_");
+                fileName = fileNameTokens[0] + "." + fileExt;
+            }
+        }
+        return fileName;
+    }
 }

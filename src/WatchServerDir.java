@@ -61,7 +61,7 @@ public class WatchServerDir implements Runnable {
                 }
                 if (event.kind() == ENTRY_CREATE) {
                     msg.logMsgToFile("file created in server folder: " + child);
-                    String fileName = SyncServer.LOCALHOST.getFileNameFromFileBlockName(child.toFile().getName());
+                    String fileName = PrgUtility.getFileNameFromFileBlockName(child.toFile().getName());
                     if (!(new File(syncClient.getLocalFilePath(), fileName).exists())) {
                         msg = startFileDownloadTask(child.toFile());
                     }

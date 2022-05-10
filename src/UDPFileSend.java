@@ -89,7 +89,7 @@ public class UDPFileSend implements Runnable {
                 DatagramPacket ackPack = new DatagramPacket(ack, ack.length);
 
                 try {
-                    socket.setSoTimeout(50000);
+                    socket.setSoTimeout(50);
                     socket.receive(ackPack);
                     ackSeq = ((ack[0] & 0xff) << 8) + (ack[1] & 0xff); // figuring the seq num
                     ackReceived = true; // we received the ack
