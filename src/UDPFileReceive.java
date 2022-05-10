@@ -22,7 +22,7 @@ public class UDPFileReceive implements Runnable {
         this.suspendFileReceive = false;
     }
 
-    public void createFile () {
+    public synchronized void createFile () {
         final String METHOD_NAME = "createFile";
         Message msg = new Message();
         try (DatagramSocket socket = new DatagramSocket(this.udpPortNum);){
@@ -47,7 +47,7 @@ public class UDPFileReceive implements Runnable {
         }
     }
 
-    private void receiveFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
+    private synchronized void receiveFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
         final String METHOD_NAME = "receiveFile";
         Message consoleMsg = new Message();
         System.out.println("receiving file");
@@ -103,7 +103,7 @@ public class UDPFileReceive implements Runnable {
         }
     }
 
-    public void sendAck(int foundLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
+    public synchronized void sendAck(int foundLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
         final String METHOD_NAME = "sendAck";
         Message consoleMsg = new Message();
         // send acknowledgement
@@ -126,7 +126,7 @@ public class UDPFileReceive implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         createFile();
     }
 }

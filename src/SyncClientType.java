@@ -1,5 +1,8 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * @author sharif
@@ -208,5 +211,33 @@ public enum SyncClientType {
         String[] fileNameTokens = fileNameWithBlockNum.split("_");
         fileName = fileNameTokens[0] + "." + fileExt;
         return fileName;
+    }
+
+    public ArrayList<String> getAllFileBlockNamesByFileName(String fileName) {
+        ArrayList<String> fileBlocks = new ArrayList<>();
+        File serverFolder = new File(localFilePath);
+        for (File f: serverFolder.listFiles()) {
+            String fileBlockName = f.getName();
+            if (fileBlockName.startsWith(fileName.split("\\.")[0])) {
+                fileBlocks.add(fileBlockName);
+            }
+        }
+        return fileBlocks;
+    }
+
+    public void mergeFileBlocks(String fileName, ArrayList<String> fileBlockNameList) throws IOException {
+        HashMap<Integer, File> orderedFileBlocks = new HashMap<>();
+        Message msg = new Message();
+        int keyIndx = 0;
+        Collections.sort(fileBlockNameList);
+        for (String fileBlockName: fileBlockNameList) {
+            msg.printToTerminal(fileBlockName);
+            orderedFileBlocks.put(keyIndx, new File(localFilePath + "/" + fileBlockName));
+            keyIndx += 1;
+        }
+        File mergedFile = new File(localFilePath + "/" + fileName);
+        FileMerger fileMerger = new FileMerger(mergedFile, orderedFileBlocks);
+        fileMerger.mergeFiles();
+        fileMerger.deleteMergedSources();
     }
 }

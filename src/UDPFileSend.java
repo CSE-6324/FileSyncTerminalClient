@@ -31,7 +31,7 @@ public class UDPFileSend implements Runnable {
      * @param port server port
      * @param host server name
      */
-    public void ready (int port, String host) {
+    public synchronized void ready (int port, String host) {
         final String METHOD_NAME = "ready";
         Message consoleMsg = new Message();
         try (DatagramSocket socket = new DatagramSocket();){
@@ -52,7 +52,7 @@ public class UDPFileSend implements Runnable {
         }
     }
 
-    public void sendFile(DatagramSocket socket, byte[] fileByteArray, InetAddress address, int port) throws IOException {
+    public synchronized void sendFile(DatagramSocket socket, byte[] fileByteArray, InetAddress address, int port) throws IOException {
         final String METHOD_NAME = "sendFile";
         Message consoleMsg = new Message();
         consoleMsg.printToTerminal("sending file");
@@ -93,7 +93,7 @@ public class UDPFileSend implements Runnable {
                 DatagramPacket ackPack = new DatagramPacket(ack, ack.length);
 
                 try {
-                    socket.setSoTimeout(50);
+                    socket.setSoTimeout(5000);
                     socket.receive(ackPack);
                     ackSeq = ((ack[0] & 0xff) << 8) + (ack[1] & 0xff); // figuring the seq num
                     ackReceived = true; // we received the ack
@@ -115,7 +115,7 @@ public class UDPFileSend implements Runnable {
         }
     }
 
-    public byte[] readFileToByteArray(File file) {
+    public synchronized byte[] readFileToByteArray(File file) {
         final String METHOD_NAME = "readFileToByteArray";
         Message consoleMsg = new Message();
         // creating a byte array using the length of the file
@@ -147,7 +147,7 @@ public class UDPFileSend implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         ready(this.updPortNum, this.hostName);
     }
 }

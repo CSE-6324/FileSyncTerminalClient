@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -73,7 +74,7 @@ public class WatchServerDir implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         final String METHOD_NAME = "run";
         Message msg = new Message();
         try {
@@ -84,7 +85,7 @@ public class WatchServerDir implements Runnable {
         }
     }
 
-    public Message startFileDownloadTask(File fileBlock) {
+    public synchronized Message startFileDownloadTask(File fileBlock) {
         final String METHOD_NAME = "processFileBlockCreateEventInServerDir";
         Message msg = new Message();
         try {
@@ -110,10 +111,8 @@ public class WatchServerDir implements Runnable {
             if (msg.isMessageSuccess()) {
                 serverResponse = msg.getMessage();
                 msg.printToTerminal("server response: " + serverResponse);
-                String[] serverResponseTokens = serverResponse.split("=");
-                serverResponse = serverResponseTokens[1];
                 if (serverResponse.equalsIgnoreCase("ok")) {
-                    // TODO
+
                 } else {
                     msg.setErrorMessage(TAG, METHOD_NAME, "ServerDownloadRequestIsNotOK", msg.getMessage());
                     msg.printToTerminal(msg.getMessage());

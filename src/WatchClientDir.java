@@ -2,6 +2,8 @@ import java.io.File;
 import java.nio.file.*;
 import java.io.IOException;
 import static java.nio.file.StandardWatchEventKinds.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -62,8 +64,17 @@ public class WatchClientDir implements Runnable {
                 }
                 if (event.kind() == ENTRY_CREATE) {
                     msg.printToTerminal("file created in client folder: " + child);
-                    if (!(new File(SyncServer.LOCALHOST.getServerFolderPath(), child.toFile().getName()).exists())) {
+                    String fileName = child.toFile().getName();
+                    if (!(new File(SyncServer.LOCALHOST.getServerFolderPath(), fileName).exists())) {
                         msg = startFileUploadTask(child.toFile());
+                    } else {
+                        fileName = syncClient.getFileNameFromFileBlockName(fileName);
+                        ArrayList<String> fileBlockNameListInServer = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
+                        ArrayList<String> fileBlockNameListInClient = syncClient.getAllFileBlockNamesByFileName(fileName);
+
+                        if (fileBlockNameListInClient.size() == fileBlockNameListInServer.size()) {
+                            syncClient.mergeFileBlocks(fileName, fileBlockNameListInClient);
+                        }
                     }
                 } else if (event.kind() == ENTRY_DELETE) {
                     msg.printToTerminal("file deleted in client folder: " + child);
@@ -76,7 +87,7 @@ public class WatchClientDir implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         final String METHOD_NAME = "run";
         Message msg = new Message();
         try {
@@ -87,7 +98,7 @@ public class WatchClientDir implements Runnable {
         }
     }
 
-    public Message startFileUploadTask(File newFile) {
+    public synchronized Message startFileUploadTask(File newFile) {
         final String METHOD_NAME = "processFileCreateEventInClientDir";
         Message msg = new Message();
         String fileBlocksUploaded = "file blocks uploaded to server" + System.lineSeparator() + "> ";
