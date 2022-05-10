@@ -111,7 +111,7 @@ public class WatchServerDir implements Runnable {
                 serverResponse = msg.getMessage();
                 msg.printToTerminal("server response: " + serverResponse);
                 if (serverResponse.equalsIgnoreCase("ok")) {
-                    msg.printToTerminal("file downloaded: " + fileBlock.getName());
+                    PrgUtility.updateFileStatusDownload(fileBlock.getName(), "done");
                 } else {
                     msg.setErrorMessage(TAG, METHOD_NAME, "ServerDownloadRequestIsNotOK", msg.getMessage());
                     msg.printToTerminal(msg.getMessage());
@@ -142,7 +142,7 @@ public class WatchServerDir implements Runnable {
             File fileToDeleteInClient = new File(syncClient.getLocalFilePath(), fileName);
             if ((fileToDeleteInClient.exists())) {
                 fileToDeleteInClient.delete();
-                msg.printToTerminal("file deleted: " + fileName);
+                PrgUtility.updateFileStatusDelete(fileName, "done");
             }
         } catch (Exception e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());

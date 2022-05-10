@@ -80,4 +80,28 @@ public class PrgUtility {
         }
         return fileName;
     }
+
+    public static void updateFileStatusBytesUpload(String fileName, int bytesUpload, int totalBytes) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, String.format("bytes uploaded: %d/%d", bytesUpload, totalBytes));
+    }
+
+    public static void updateFileStatusBlockUpload(String fileName, int fileBlock, int totalFileBlock) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, String.format("blocks uploaded: %d/%d", fileBlock, totalFileBlock));
+    }
+
+    public static void updateFileStatusDelete(String fileName, String status) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, "delete " + status);
+    }
+
+    public static void updateFileStatusDownload(String fileName, String status) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, "download " + status);
+    }
+
+    public static void updateFileStatusBlockCheckSum(String fileName, String status) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, status);
+    }
+
+    public static void updateFileStatusUpload(String fileName, String status) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, "delete " + status);
+    }
 }

@@ -10,6 +10,7 @@ public class FileSyncClientApp {
     private static final String TAG = "FileSyncClientApp";
     private static WatchClientDir clientWatchDir;
     private static WatchServerDir serverWatchDir;
+    public static FileStatus fileStatus = FileStatus.getInstance();
 
     public static void main(String[] args) {
         if (!validClientAppArgs(args)) {
@@ -103,7 +104,7 @@ public class FileSyncClientApp {
                     serverWatchDir.resumeAllOperation();
                     msg.printToTerminal("all operation(s) resumed");
                 } else if (userInput.equalsIgnoreCase("status")) {
-                    msg.printToTerminal("TODO: status");
+                    msg.printToTerminal(fileStatus.getFileStatus());
                 } else if (userInput.equalsIgnoreCase("exit")) {
                     exitMsg();
                     break;

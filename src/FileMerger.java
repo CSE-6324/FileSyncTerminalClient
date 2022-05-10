@@ -36,15 +36,9 @@ public class FileMerger {
         // creating a byte array using the length of the file
         // file.length returns long which is cast to int
         int fileLength = (int) file.length();
-        int numBytesReadIntoBuff;
         byte[] bArray = new byte[fileLength];
         try (FileInputStream fis = new FileInputStream(file);){
-            numBytesReadIntoBuff = fis.read(bArray);
-            if (numBytesReadIntoBuff == -1) {
-                consoleMsg.printToTerminal("There is not more data because the end of the file has been reached");
-            } else {
-                consoleMsg.printToTerminal("Total number of bytes read into the buffer = " + numBytesReadIntoBuff);
-            }
+            fis.read(bArray);
         } catch (IOException ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "IOException", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());

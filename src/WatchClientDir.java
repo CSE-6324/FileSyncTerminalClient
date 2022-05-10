@@ -107,15 +107,18 @@ public class WatchClientDir implements Runnable {
         Message msg = new Message();
         String fileBlocksUploaded = "file blocks uploaded to server" + System.lineSeparator() + "> ";
         FileToSync fileToSync = new FileToSync(newFile);
+        int blockUploadedCount = 1;
         try {
             msg = fileToSync.generateFileBlocksAndCheckSums();
             if (msg.isMessageSuccess()) {
-                msg.printToTerminal("File Blocks :- ");
                 for (FileBlock fb: fileToSync.getFileBlockList()) {
                     uploadFileBlockToServer(fb);
                     fileBlocksUploaded += fb.getFileBlockName() + " :: " + fb.getFileCheckSum() + System.lineSeparator() + "> ";
+                    PrgUtility.updateFileStatusBlockUpload(newFile.getName(), blockUploadedCount, fileToSync.getFileBlockList().size());
+                    blockUploadedCount++;
                 }
-                msg.printToTerminal(fileBlocksUploaded);
+                //msg.printToTerminal(fileBlocksUploaded);
+                PrgUtility.updateFileStatusBlockCheckSum(newFile.getName() + "-checksums" + System.lineSeparator(), fileBlocksUploaded);
             } else {
                 msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGenerateFileBlocksAndCheckSum", msg.getMessage());
                 msg.printToTerminal(msg.getMessage());
@@ -139,8 +142,8 @@ public class WatchClientDir implements Runnable {
             UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fileBlock.getFile());
             Thread fileSendThread = new Thread(udpFileSend);
             try {
-                msg.printToTerminal("file uploading: " + fileBlock.getFileBlockName());
                 fileSendThread.start();
+                PrgUtility.updateFileStatusUpload(fileBlock.getFileBlockName(), "done");
             } catch (Exception e) {
                 msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendFileToServer", e.getMessage());
                 msg.printToTerminal(msg.getMessage());
@@ -171,7 +174,7 @@ public class WatchClientDir implements Runnable {
                 if (serverResponse.equalsIgnoreCase("ok")) {
                     String fileName = fileToDelete.getName();
                     fileToDelete.delete();
-                    msg.printToTerminal("file deleted: " + fileName);
+                    PrgUtility.updateFileStatusDelete(fileName, "done");
                 } else {
                     msg.setErrorMessage(TAG, METHOD_NAME, "ServerResponseNotOk", msg.getMessage());
                     msg.printToTerminal(msg.getMessage());

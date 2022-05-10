@@ -56,6 +56,9 @@ public class UDPFileSend implements Runnable {
         int seqNumber = 0; // for order
         boolean eofFlag; // to see if we got to the end of the file
         int ackSeq = 0; // to see if the datagram was received correctly
+        int bytesUploaded = 0;
+        PrgUtility.updateFileStatusBytesUpload(this.fileToSend.getName(), bytesUploaded, fileByteArray.length);
+        int srcPos, destPost, len;
         for (int i = 0; i < fileByteArray.length; i = i + 1021) {
             seqNumber += 1;
 
@@ -66,16 +69,23 @@ public class UDPFileSend implements Runnable {
 
             if ((i + 1021) >= fileByteArray.length) { // have we reached the end of file
                 eofFlag = true;
-                message[2] = (byte) (1); // we reached teh end of the file (last datagram to send)
+                message[2] = (byte) (1); // we reached the end of the file (last datagram to send)
             } else {
                 eofFlag = false;
                 message[2] = (byte) (0); // we haven't reached the end of the file, still sending datagrams
             }
 
+
             if (!eofFlag) {
-                System.arraycopy(fileByteArray, i, message, 3,1021);
+                srcPos = i;
+                destPost = 3;
+                len = 1021;
+                System.arraycopy(fileByteArray, srcPos, message, destPost, len);
             } else { // if it is the last datagram
-                System.arraycopy(fileByteArray, i, message, 3, fileByteArray.length - i);
+                srcPos = i;
+                destPost = 3;
+                len = fileByteArray.length - i;
+                System.arraycopy(fileByteArray, srcPos, message, destPost, len);
             }
 
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, address, port);
@@ -101,9 +111,13 @@ public class UDPFileSend implements Runnable {
                 // if the packet was received correctly next packet can be sent
                 if ((ackSeq == seqNumber) && (ackReceived)) {
                     commMsg.logMsgToFile("ack received: seq num = " + ackSeq);
+                    bytesUploaded += len;
+                    PrgUtility.updateFileStatusBytesUpload(this.fileToSend.getName(), bytesUploaded, fileByteArray.length);
                     break;
                 } else { // packet was not received, so we resend it
                     socket.send(sendPacket);
+                    bytesUploaded -=  len;
+                    PrgUtility.updateFileStatusBytesUpload(this.fileToSend.getName(), bytesUploaded, fileByteArray.length);
                     commMsg.logMsgToFile("resending: seq num = " + seqNumber);
                 }
             }
