@@ -15,13 +15,11 @@ public class UDPFileSend implements Runnable {
     private static final String TAG = "UDPFileSend";
     private final String hostName;
     private final int updPortNum;
-    private File fileToSend;
-    private volatile boolean suspendFileSend;
+    private final File fileToSend;
 
     public UDPFileSend(String hostName, int updPortNum, File fileToSend) {
         this.hostName = hostName;
         this.updPortNum = updPortNum;
-        suspendFileSend = false;
         this.fileToSend = fileToSend;
     }
 
@@ -44,6 +42,7 @@ public class UDPFileSend implements Runnable {
                 byte[] fileByteArray = readFileToByteArray(fileToSend);
                 sendFile(socket, fileByteArray, address, port);
             }
+
         } catch (Exception ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());
@@ -57,8 +56,6 @@ public class UDPFileSend implements Runnable {
         int seqNumber = 0; // for order
         boolean eofFlag; // to see if we got to the end of the file
         int ackSeq = 0; // to see if the datagram was received correctly
-        int maxAckSendLimit = 5;
-        int ackSendCount = 0;
         for (int i = 0; i < fileByteArray.length; i = i + 1021) {
             seqNumber += 1;
 
@@ -87,7 +84,7 @@ public class UDPFileSend implements Runnable {
 
             boolean ackReceived; // was the datagram received?
 
-            while (!(suspendFileSend && (maxAckSendLimit < ackSendCount))) {
+            while (true) {
                 byte[] ack = new byte[2];
                 DatagramPacket ackPack = new DatagramPacket(ack, ack.length);
 
@@ -107,7 +104,6 @@ public class UDPFileSend implements Runnable {
                     break;
                 } else { // packet was not received, so we resend it
                     socket.send(sendPacket);
-                    ackSendCount++;
                     consoleMsg.printToTerminal("resending: seq num = " + seqNumber);
                 }
             }
@@ -127,14 +123,6 @@ public class UDPFileSend implements Runnable {
             consoleMsg.printToTerminal(consoleMsg.getMessage());
         }
         return bArray;
-    }
-
-    public void suspendFileSend() {
-        this.suspendFileSend = true;
-    }
-
-    public void resumeFileSend() {
-        this.suspendFileSend = false;
     }
 
     @Override

@@ -16,7 +16,7 @@ public class WatchClientDir implements Runnable {
     private final HashMap<WatchKey, Path> keys;
     private final SyncClientType syncClient;
     private final TCPClientSocket tcpClientSocketConn;
-    ArrayList<UDPFileSend> udpFileSendList;
+    private volatile boolean suspendAllOperation = false;
 
     public WatchClientDir(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
         this.syncClient = syncClient;
@@ -24,7 +24,6 @@ public class WatchClientDir implements Runnable {
         this.keys = new HashMap<>();
         this.tcpClientSocketConn = tcpClientSocketConn;
         registerClientDir(Paths.get(this.syncClient.getLocalFilePath()));
-        udpFileSendList = new ArrayList<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -37,10 +36,10 @@ public class WatchClientDir implements Runnable {
         keys.put(key, dir);
     }
 
-    private void processFileEventsInClientDir() throws IOException {
+    private synchronized void processFileEventsInClientDir() throws IOException {
         final String METHOD_NAME = "processFileEventsInClientDir";
         Message msg = new Message();
-        for (;;) {
+        while (!suspendAllOperation) {
             // wait for key to be signalled
             WatchKey key;
             try {
@@ -138,7 +137,6 @@ public class WatchClientDir implements Runnable {
 
             int udpPort = Integer.parseInt(serverResponse.split("=")[1]);
             UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fileBlock.getFile());
-            udpFileSendList.add(udpFileSend);
             Thread fileSendThread = new Thread(udpFileSend);
             try {
                 fileSendThread.start();
@@ -152,15 +150,11 @@ public class WatchClientDir implements Runnable {
         }
     }
 
-    public void suspendFileUpload() {
-        for (UDPFileSend udpFileSend: udpFileSendList) {
-            udpFileSend.suspendFileSend();
-        }
+    public void suspendAllOperation() throws IOException {
+        suspendAllOperation = true;
     }
 
-    public void resumeFileUpload() {
-        for (UDPFileSend udpFileSend: udpFileSendList) {
-            udpFileSend.resumeFileSend();
-        }
+    public void resumeAllOperation() {
+        suspendAllOperation = false;
     }
 }

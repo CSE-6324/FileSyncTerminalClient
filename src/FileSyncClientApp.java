@@ -95,11 +95,13 @@ public class FileSyncClientApp {
             String userInput = stdIn.readLine().trim();
             while (true) {
                 if (userInput.equalsIgnoreCase("suspend")) {
-                    msg.printToTerminal("all operation suspend");
-                    clientWatchDir.suspendFileUpload();
+                    clientWatchDir.suspendAllOperation();
+                    serverWatchDir.suspendAllOperation();
+                    msg.printToTerminal("all operation(s) suspended");
                 } else if (userInput.equalsIgnoreCase("resume")) {
-                    msg.printToTerminal("all operation resumed");
-                    clientWatchDir.resumeFileUpload();
+                    clientWatchDir.resumeAllOperation();
+                    serverWatchDir.resumeAllOperation();
+                    msg.printToTerminal("all operation(s) resumed");
                 } else if (userInput.equalsIgnoreCase("status")) {
                     msg.printToTerminal("TODO: status");
                 } else if (userInput.equalsIgnoreCase("exit")) {

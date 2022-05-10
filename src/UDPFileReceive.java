@@ -13,13 +13,11 @@ import java.net.InetAddress;
 public class UDPFileReceive implements Runnable {
     private static final String TAG = "UDPFileReceive";
     private final int udpPortNum;
-    private String fileReceiveFolder;
-    private volatile boolean suspendFileReceive;
+    private final String fileReceiveFolder;
 
     public UDPFileReceive(int udpPortNum, String fileReceiveFolder) {
         this.udpPortNum = udpPortNum;
         this.fileReceiveFolder = fileReceiveFolder;
-        this.suspendFileReceive = false;
     }
 
     public void createFile () {
@@ -54,7 +52,7 @@ public class UDPFileReceive implements Runnable {
         int seqNum = 0; // order of seq
         int foundLast = 0; // last seq found
 
-        while (!suspendFileReceive) {
+        while (true) {
             byte[] message = new byte[1024]; // where the data from the received datagram is stored
             byte[] fileByteArray = new byte[1021]; // where we store the data to be written to the file
 
@@ -116,14 +114,6 @@ public class UDPFileReceive implements Runnable {
         DatagramPacket ack = new DatagramPacket(ackPacket, ackPacket.length, address, port);
         socket.send(ack);
         consoleMsg.printToTerminal("send ack: seq num = " + foundLast);
-    }
-
-    public void suspendFileReceive() {
-        this.suspendFileReceive = true;
-    }
-
-    public void resumeFileReceive() {
-        this.suspendFileReceive = false;
     }
 
     @Override

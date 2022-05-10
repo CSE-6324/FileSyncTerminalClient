@@ -12,6 +12,7 @@ public class WatchServerDir implements Runnable {
     private final HashMap<WatchKey, Path> keys;
     private final SyncClientType syncClient;
     private final TCPClientSocket tcpClientSocketConn;
+    private volatile boolean suspendAllOperation = false;
 
     public WatchServerDir(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
         this.syncClient = syncClient;
@@ -31,10 +32,10 @@ public class WatchServerDir implements Runnable {
         keys.put(key, dir);
     }
 
-    private void processFileEventsInServerDir() throws IOException {
+    private synchronized void processFileEventsInServerDir() throws IOException {
         final String METHOD_NAME = "processFileEventsInServerDir";
         Message msg = new Message();
-        for (;;) {
+        while (!suspendAllOperation) {
             // wait for key to be signalled
             WatchKey key;
             try {
@@ -86,7 +87,7 @@ public class WatchServerDir implements Runnable {
     }
 
     public synchronized Message startFileDownloadTask(File fileBlock) {
-        final String METHOD_NAME = "processFileBlockCreateEventInServerDir";
+        final String METHOD_NAME = "startFileDownloadTask";
         Message msg = new Message();
         try {
             downloadFileBlockToClient(fileBlock);
@@ -125,6 +126,13 @@ public class WatchServerDir implements Runnable {
             msg.setErrorMessage(TAG, METHOD_NAME, "Exception", msg.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
+    }
 
+    public void suspendAllOperation() throws IOException {
+        suspendAllOperation = true;
+    }
+
+    public void resumeAllOperation() {
+        suspendAllOperation = false;
     }
 }
