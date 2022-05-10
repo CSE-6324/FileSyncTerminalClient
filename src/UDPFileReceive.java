@@ -27,13 +27,13 @@ public class UDPFileReceive implements Runnable {
             byte[] receiveFileName = new byte[1024]; // where we store the data of datagram
             DatagramPacket receiveFileNamePacket = new DatagramPacket(receiveFileName, receiveFileName.length);
             socket.receive(receiveFileNamePacket);
-            msg.printToTerminal("receiving file name: ");
+            msg.logMsgToFile("receiving file name: ");
             byte[] data = receiveFileNamePacket.getData();
             String fileName = new String(data, 0, receiveFileNamePacket.getLength());
             String[] fileNameTokens = fileName.split("/");
             fileName = fileNameTokens[fileNameTokens.length-1];
 
-            msg.printToTerminal("creating file: " + fileName);
+            msg.logMsgToFile("creating file: " + fileName);
             File file = new File(this.fileReceiveFolder + "/" + fileName);
             FileOutputStream outToFile = new FileOutputStream(file);
 
@@ -46,8 +46,8 @@ public class UDPFileReceive implements Runnable {
 
     private void receiveFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
         final String METHOD_NAME = "receiveFile";
-        Message consoleMsg = new Message();
-        System.out.println("receiving file");
+        Message commMsg = new Message();
+        commMsg.logMsgToFile("receiving file");
         boolean eofFile; // have we reached the end of  file
         int seqNum = 0; // order of seq
         int foundLast = 0; // last seq found
@@ -85,12 +85,12 @@ public class UDPFileReceive implements Runnable {
                 synchronized (this){
                     outToFile.write(fileByteArray);
                 }
-                consoleMsg.printToTerminal("received: seq num = " + foundLast);
+                commMsg.logMsgToFile("received: seq num = " + foundLast);
 
                 // send acknowledgement
                 sendAck(foundLast, socket, address, port);
             } else {
-                consoleMsg.printToTerminal("expected seq num: " + (foundLast + 1) + " but received " + seqNum + ". DISCARDING");
+                commMsg.logMsgToFile("expected seq num: " + (foundLast + 1) + " but received " + seqNum + ". DISCARDING");
                 // resend the acknowledgement
                 sendAck(foundLast, socket, address, port);
             }
@@ -104,7 +104,7 @@ public class UDPFileReceive implements Runnable {
 
     public void sendAck(int foundLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
         final String METHOD_NAME = "sendAck";
-        Message consoleMsg = new Message();
+        Message commMsg = new Message();
         // send acknowledgement
         byte[] ackPacket = new byte[2];
         ackPacket[0] = (byte) (foundLast >> 8);
@@ -113,7 +113,7 @@ public class UDPFileReceive implements Runnable {
         // the datagram packet to be sent
         DatagramPacket ack = new DatagramPacket(ackPacket, ackPacket.length, address, port);
         socket.send(ack);
-        consoleMsg.printToTerminal("send ack: seq num = " + foundLast);
+        commMsg.logMsgToFile("send ack: seq num = " + foundLast);
     }
 
     @Override

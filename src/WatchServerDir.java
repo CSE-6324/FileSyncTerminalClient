@@ -47,7 +47,7 @@ public class WatchServerDir implements Runnable {
             }
             Path dir = keys.get(key);
             if (dir == null) {
-                msg.printToTerminal( "watchKey not recognized! continuing to next event");
+                msg.logMsgToFile( "watchKey not recognized! continuing to next event");
                 continue;
             }
             for (WatchEvent<?> event: key.pollEvents()) {
@@ -60,14 +60,14 @@ public class WatchServerDir implements Runnable {
                     continue;
                 }
                 if (event.kind() == ENTRY_CREATE) {
-                    msg.printToTerminal("file created in server folder: " + child);
+                    msg.logMsgToFile("file created in server folder: " + child);
                     String fileName = SyncServer.LOCALHOST.getFileNameFromFileBlockName(child.toFile().getName());
                     if (!(new File(syncClient.getLocalFilePath(), fileName).exists())) {
                         msg = startFileDownloadTask(child.toFile());
                     }
                 } else if (event.kind() == ENTRY_DELETE) {
-                    msg.printToTerminal("file deleted in server folder: " + child);
-                    msg.printToTerminal("TODO");
+                    msg.logMsgToFile("file deleted in server folder: " + child);
+                    msg.logMsgToFile("TODO");
                 }
             }
             key.reset();

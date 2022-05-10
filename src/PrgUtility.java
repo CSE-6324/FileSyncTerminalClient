@@ -17,6 +17,7 @@ public class PrgUtility {
     public static final int FILE_BLOCK_SIZE_2_KB = 1024 * 2;
     public static final int TCP_PORT_NUM = 5555;
     public static final String HOST_NAME = "localhost";
+    public static final String CLIENT_LOG_FILE = PROJECT_FILE_PATH + "log_files/client_log.txt";
 
     public static String getFileExtension(String fileName) {
         String extension = "";

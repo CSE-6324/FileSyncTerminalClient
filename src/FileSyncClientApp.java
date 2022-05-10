@@ -113,7 +113,6 @@ public class FileSyncClientApp {
                 userInput = stdIn.readLine().trim();
             }
         } catch (IOException e) {
-            //TODO: replace this with dump to file as needed
             msg.setErrorMessage(TAG, METHOD_NAME, "IOException", e.getMessage());
             msg.printToTerminal(msg.getMessage());
         }

@@ -1,3 +1,10 @@
+import javax.annotation.processing.SupportedSourceVersion;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
 /**
  * @author sharif
  */
@@ -8,6 +15,8 @@ public class Message {
     private String msg;
     private int msgCode;
     private boolean msgSuccess;
+    private final File logFile = new File(PrgUtility.CLIENT_LOG_FILE);
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Message() {
         this("");
@@ -74,7 +83,23 @@ public class Message {
     }
 
     public void printToTerminal(String msg) {
+        if (!msgSuccess) {
+            msg = logMsgToFile(msg);
+        }
         System.out.println(msg);
         printToTerminalUserPrompt();
+    }
+
+    public String logMsgToFile(String msg) {
+        String userFriendlyMsg = "";
+        try (Writer filWriter = new FileWriter(logFile, true);){
+            String logMsg = String.format("[ %s ] %s", simpleDateFormat.format(System.currentTimeMillis()), msg);
+            filWriter.write(logMsg + System.lineSeparator());
+            filWriter.flush();
+            userFriendlyMsg = "the app has encountered an issue. its logged and will be fixed asap. thank you.";
+        } catch (Exception e) {
+            userFriendlyMsg = String.format("an internal error (%s) has occurred. we have noted it, and are working on it. thank you.", e.getMessage());
+        }
+        return userFriendlyMsg;
     }
 }

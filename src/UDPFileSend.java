@@ -31,7 +31,7 @@ public class UDPFileSend implements Runnable {
      */
     public void ready (int port, String host) {
         final String METHOD_NAME = "ready";
-        Message consoleMsg = new Message();
+        Message commMsg = new Message();
         try (DatagramSocket socket = new DatagramSocket();){
             InetAddress address = InetAddress.getByName(host);
             String fileName = fileToSend.getName();
@@ -44,15 +44,15 @@ public class UDPFileSend implements Runnable {
             }
 
         } catch (Exception ex) {
-            consoleMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
-            consoleMsg.printToTerminal(consoleMsg.getMessage());
+            commMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
+            commMsg.printToTerminal(commMsg.getMessage());
         }
     }
 
     public synchronized void sendFile(DatagramSocket socket, byte[] fileByteArray, InetAddress address, int port) throws IOException {
         final String METHOD_NAME = "sendFile";
-        Message consoleMsg = new Message();
-        consoleMsg.printToTerminal("sending file");
+        Message commMsg = new Message();
+        commMsg.logMsgToFile("sending file");
         int seqNumber = 0; // for order
         boolean eofFlag; // to see if we got to the end of the file
         int ackSeq = 0; // to see if the datagram was received correctly
@@ -80,7 +80,7 @@ public class UDPFileSend implements Runnable {
 
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, address, port);
             socket.send(sendPacket);
-            consoleMsg.printToTerminal("sent: seq num = " + seqNumber);
+            commMsg.logMsgToFile("sent: seq num = " + seqNumber);
 
             boolean ackReceived; // was the datagram received?
 
@@ -94,17 +94,17 @@ public class UDPFileSend implements Runnable {
                     ackSeq = ((ack[0] & 0xff) << 8) + (ack[1] & 0xff); // figuring the seq num
                     ackReceived = true; // we received the ack
                 } catch (SocketTimeoutException ex) {
-                    consoleMsg.printToTerminal("socked timed out waiting for ack");
+                    commMsg.logMsgToFile("socked timed out waiting for ack");
                     ackReceived = false; // we did not receive the ack
                 }
 
                 // if the packet was received correctly next packet can be sent
                 if ((ackSeq == seqNumber) && (ackReceived)) {
-                    consoleMsg.printToTerminal("ack received: seq num = " + ackSeq);
+                    commMsg.logMsgToFile("ack received: seq num = " + ackSeq);
                     break;
                 } else { // packet was not received, so we resend it
                     socket.send(sendPacket);
-                    consoleMsg.printToTerminal("resending: seq num = " + seqNumber);
+                    commMsg.logMsgToFile("resending: seq num = " + seqNumber);
                 }
             }
         }
@@ -112,15 +112,15 @@ public class UDPFileSend implements Runnable {
 
     public byte[] readFileToByteArray(File file) {
         final String METHOD_NAME = "readFileToByteArray";
-        Message consoleMsg = new Message();
+        Message commMsg = new Message();
         // creating a byte array using the length of the file
         // file.length returns long which is cast to int
         byte[] bArray = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file);){
             fis.read(bArray);
         } catch (IOException ex) {
-            consoleMsg.setErrorMessage(TAG, METHOD_NAME, "IOException", ex.getMessage());
-            consoleMsg.printToTerminal(consoleMsg.getMessage());
+            commMsg.setErrorMessage(TAG, METHOD_NAME, "IOException", ex.getMessage());
+            commMsg.printToTerminal(commMsg.getMessage());
         }
         return bArray;
     }

@@ -51,7 +51,7 @@ public class WatchClientDir implements Runnable {
             }
             Path dir = keys.get(key);
             if (dir == null) {
-                msg.printToTerminal( "watchKey not recognized! continuing to next event");
+                msg.logMsgToFile( "watchKey not recognized! continuing to next event");
                 continue;
             }
             for (WatchEvent<?> event: key.pollEvents()) {
@@ -64,7 +64,7 @@ public class WatchClientDir implements Runnable {
                     continue;
                 }
                 if (event.kind() == ENTRY_CREATE) {
-                    msg.printToTerminal("file created in client folder: " + child);
+                    msg.logMsgToFile("file created in client folder: " + child);
                     String fileName = child.toFile().getName();
                     if (!(new File(SyncServer.LOCALHOST.getServerFolderPath(), fileName).exists())) {
                         msg = startFileUploadTask(child.toFile());
@@ -79,9 +79,9 @@ public class WatchClientDir implements Runnable {
 //                        }
 //                    }
                 } else if (event.kind() == ENTRY_DELETE) {
-                    msg.printToTerminal("file deleted in client folder: " + child);
+                    msg.logMsgToFile("file deleted in client folder: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
-                    msg.printToTerminal("file modified in client folder: " + child);
+                    msg.logMsgToFile("file modified in client folder: " + child);
                 }
             }
             key.reset();
@@ -122,7 +122,6 @@ public class WatchClientDir implements Runnable {
             msg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
-
         return msg;
     }
 
