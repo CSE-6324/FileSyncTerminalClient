@@ -8,6 +8,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class FileSyncClientApp {
     private static final String TAG = "FileSyncClientApp";
+    private static WatchClientDir clientWatchDir;
+    private static WatchServerDir serverWatchDir;
 
     public static void main(String[] args) {
         if (!validClientAppArgs(args)) {
@@ -93,9 +95,11 @@ public class FileSyncClientApp {
             String userInput = stdIn.readLine().trim();
             while (true) {
                 if (userInput.equalsIgnoreCase("suspend")) {
-                    msg.printToTerminal("TODO: suspend");
+                    msg.printToTerminal("all operation suspend");
+                    clientWatchDir.suspendFileUpload();
                 } else if (userInput.equalsIgnoreCase("resume")) {
-                    msg.printToTerminal("TODO: resume");
+                    msg.printToTerminal("all operation resumed");
+                    clientWatchDir.resumeFileUpload();
                 } else if (userInput.equalsIgnoreCase("status")) {
                     msg.printToTerminal("TODO: status");
                 } else if (userInput.equalsIgnoreCase("exit")) {
@@ -115,7 +119,7 @@ public class FileSyncClientApp {
     }
 
     private static void startClientDirWatchService(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
-        WatchClientDir clientWatchDir = new WatchClientDir(syncClient, tcpClientSocketConn);
+        clientWatchDir = new WatchClientDir(syncClient, tcpClientSocketConn);
         Thread clientWatcherThread = new Thread(clientWatchDir);
         clientWatcherThread.start();
     }
@@ -131,7 +135,7 @@ public class FileSyncClientApp {
     }
 
     private static void startServerDirWatchService(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
-        WatchServerDir serverWatchDir = new WatchServerDir(syncClient, tcpClientSocketConn);
+        serverWatchDir = new WatchServerDir(syncClient, tcpClientSocketConn);
         Thread serverWatcherThread = new Thread(serverWatchDir);
         serverWatcherThread.start();
     }

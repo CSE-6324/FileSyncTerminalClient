@@ -31,24 +31,22 @@ public class UDPFileSend implements Runnable {
      * @param port server port
      * @param host server name
      */
-    public synchronized void ready (int port, String host) {
+    public void ready (int port, String host) {
         final String METHOD_NAME = "ready";
         Message consoleMsg = new Message();
         try (DatagramSocket socket = new DatagramSocket();){
             InetAddress address = InetAddress.getByName(host);
-
-            String fileName = this.fileToSend.getName();
-            byte[] fileNameBytes = fileName.getBytes();
-
-            DatagramPacket fileStatPacket = new DatagramPacket(fileNameBytes, fileNameBytes.length, address, port);
-            socket.send(fileStatPacket);
-
-            byte[] fileByteArray = readFileToByteArray(this.fileToSend);
-            sendFile(socket, fileByteArray, address, port);
+            String fileName = fileToSend.getName();
+            if (PrgUtility.isFileNameValid(fileName) && PrgUtility.hasFileExtension(fileName)) {
+                byte[] fileNameBytes = fileName.getBytes();
+                DatagramPacket fileStatPacket = new DatagramPacket(fileNameBytes, fileNameBytes.length, address, port);
+                socket.send(fileStatPacket);
+                byte[] fileByteArray = readFileToByteArray(fileToSend);
+                sendFile(socket, fileByteArray, address, port);
+            }
         } catch (Exception ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());
-            ex.printStackTrace();
         }
     }
 
@@ -59,7 +57,8 @@ public class UDPFileSend implements Runnable {
         int seqNumber = 0; // for order
         boolean eofFlag; // to see if we got to the end of the file
         int ackSeq = 0; // to see if the datagram was received correctly
-
+        int maxAckSendLimit = 5;
+        int ackSendCount = 0;
         for (int i = 0; i < fileByteArray.length; i = i + 1021) {
             seqNumber += 1;
 
@@ -88,19 +87,18 @@ public class UDPFileSend implements Runnable {
 
             boolean ackReceived; // was the datagram received?
 
-            while (!suspendFileSend) {
+            while (!(suspendFileSend && (maxAckSendLimit < ackSendCount))) {
                 byte[] ack = new byte[2];
                 DatagramPacket ackPack = new DatagramPacket(ack, ack.length);
 
                 try {
-                    socket.setSoTimeout(5000);
+                    socket.setSoTimeout(50000);
                     socket.receive(ackPack);
                     ackSeq = ((ack[0] & 0xff) << 8) + (ack[1] & 0xff); // figuring the seq num
                     ackReceived = true; // we received the ack
                 } catch (SocketTimeoutException ex) {
                     consoleMsg.printToTerminal("socked timed out waiting for ack");
                     ackReceived = false; // we did not receive the ack
-                    ex.printStackTrace();
                 }
 
                 // if the packet was received correctly next packet can be sent
@@ -109,31 +107,24 @@ public class UDPFileSend implements Runnable {
                     break;
                 } else { // packet was not received, so we resend it
                     socket.send(sendPacket);
+                    ackSendCount++;
                     consoleMsg.printToTerminal("resending: seq num = " + seqNumber);
                 }
             }
         }
     }
 
-    public synchronized byte[] readFileToByteArray(File file) {
+    public byte[] readFileToByteArray(File file) {
         final String METHOD_NAME = "readFileToByteArray";
         Message consoleMsg = new Message();
         // creating a byte array using the length of the file
         // file.length returns long which is cast to int
-        int fileLength = (int) file.length();
-        int numBytesReadIntoBuff;
-        byte[] bArray = new byte[fileLength];
+        byte[] bArray = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file);){
-            numBytesReadIntoBuff = fis.read(bArray);
-            if (numBytesReadIntoBuff == -1) {
-                consoleMsg.printToTerminal("There is not more data because the end of the file has been reached");
-            } else {
-                consoleMsg.printToTerminal("Total number of bytes read into the buffer = " + numBytesReadIntoBuff);
-            }
+            fis.read(bArray);
         } catch (IOException ex) {
             consoleMsg.setErrorMessage(TAG, METHOD_NAME, "IOException", ex.getMessage());
             consoleMsg.printToTerminal(consoleMsg.getMessage());
-            ex.printStackTrace();
         }
         return bArray;
     }

@@ -16,6 +16,7 @@ public class WatchClientDir implements Runnable {
     private final HashMap<WatchKey, Path> keys;
     private final SyncClientType syncClient;
     private final TCPClientSocket tcpClientSocketConn;
+    ArrayList<UDPFileSend> udpFileSendList;
 
     public WatchClientDir(SyncClientType syncClient, TCPClientSocket tcpClientSocketConn) throws IOException {
         this.syncClient = syncClient;
@@ -23,6 +24,7 @@ public class WatchClientDir implements Runnable {
         this.keys = new HashMap<>();
         this.tcpClientSocketConn = tcpClientSocketConn;
         registerClientDir(Paths.get(this.syncClient.getLocalFilePath()));
+        udpFileSendList = new ArrayList<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -67,15 +69,16 @@ public class WatchClientDir implements Runnable {
                     String fileName = child.toFile().getName();
                     if (!(new File(SyncServer.LOCALHOST.getServerFolderPath(), fileName).exists())) {
                         msg = startFileUploadTask(child.toFile());
-                    } else {
-                        fileName = syncClient.getFileNameFromFileBlockName(fileName);
-                        ArrayList<String> fileBlockNameListInServer = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
-                        ArrayList<String> fileBlockNameListInClient = syncClient.getAllFileBlockNamesByFileName(fileName);
-
-                        if (fileBlockNameListInClient.size() == fileBlockNameListInServer.size()) {
-                            syncClient.mergeFileBlocks(fileName, fileBlockNameListInClient);
-                        }
                     }
+//                    } else {
+//                        fileName = syncClient.getFileNameFromFileBlockName(fileName);
+//                        ArrayList<String> fileBlockNameListInServer = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
+//                        ArrayList<String> fileBlockNameListInClient = syncClient.getAllFileBlockNamesByFileName(fileName);
+//
+//                        if (fileBlockNameListInClient.size() == fileBlockNameListInServer.size()) {
+//                            syncClient.mergeFileBlocks(fileName, fileBlockNameListInClient);
+//                        }
+//                    }
                 } else if (event.kind() == ENTRY_DELETE) {
                     msg.printToTerminal("file deleted in client folder: " + child);
                 } else if (event.kind() == ENTRY_MODIFY) {
@@ -135,6 +138,7 @@ public class WatchClientDir implements Runnable {
 
             int udpPort = Integer.parseInt(serverResponse.split("=")[1]);
             UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fileBlock.getFile());
+            udpFileSendList.add(udpFileSend);
             Thread fileSendThread = new Thread(udpFileSend);
             try {
                 fileSendThread.start();
@@ -145,6 +149,18 @@ public class WatchClientDir implements Runnable {
         } else {
             msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendTCPRequest",msg.getMessage());
             msg.printToTerminal(msg.getMessage());
+        }
+    }
+
+    public void suspendFileUpload() {
+        for (UDPFileSend udpFileSend: udpFileSendList) {
+            udpFileSend.suspendFileSend();
+        }
+    }
+
+    public void resumeFileUpload() {
+        for (UDPFileSend udpFileSend: udpFileSendList) {
+            udpFileSend.resumeFileSend();
         }
     }
 }

@@ -73,7 +73,7 @@ public class FileToSync {
         Message returnMsg = new Message();
         int blockNum = 0;
 //        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
-        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_2_KB; // for testing with smaller files, change later
+        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_2_KB;
         byte[] buffer = new byte[fileBlockSize];
         String fileName = file.getName();
         int bytesRead = -1;

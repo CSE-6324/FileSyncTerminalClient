@@ -22,7 +22,7 @@ public class UDPFileReceive implements Runnable {
         this.suspendFileReceive = false;
     }
 
-    public synchronized void createFile () {
+    public void createFile () {
         final String METHOD_NAME = "createFile";
         Message msg = new Message();
         try (DatagramSocket socket = new DatagramSocket(this.udpPortNum);){
@@ -40,14 +40,13 @@ public class UDPFileReceive implements Runnable {
             FileOutputStream outToFile = new FileOutputStream(file);
 
             receiveFile(outToFile, socket);
-            outToFile.close();
         } catch (Exception ex) {
             msg.setErrorMessage(TAG, METHOD_NAME, "Exception",  ex.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
     }
 
-    private synchronized void receiveFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
+    private void receiveFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
         final String METHOD_NAME = "receiveFile";
         Message consoleMsg = new Message();
         System.out.println("receiving file");
@@ -85,7 +84,9 @@ public class UDPFileReceive implements Runnable {
                 System.arraycopy(message, 3, fileByteArray, 0, 1021);
 
                 // write the retrieved data to the file and print received data seq num
-                outToFile.write(fileByteArray);
+                synchronized (this){
+                    outToFile.write(fileByteArray);
+                }
                 consoleMsg.printToTerminal("received: seq num = " + foundLast);
 
                 // send acknowledgement
@@ -103,7 +104,7 @@ public class UDPFileReceive implements Runnable {
         }
     }
 
-    public synchronized void sendAck(int foundLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
+    public void sendAck(int foundLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
         final String METHOD_NAME = "sendAck";
         Message consoleMsg = new Message();
         // send acknowledgement
