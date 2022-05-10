@@ -76,10 +76,12 @@ public class WatchClientDir implements Runnable {
 
                         if (fileBlockNameListInClient.size() == fileBlockNameListInServer.size()) {
                             syncClient.mergeFileBlocks(fileName, fileBlockNameListInClient);
+                            msg.printToTerminal("finished merging of file blocks of file: " + fileName);
                         }
                     }
                 } else if (event.kind() == ENTRY_DELETE) {
                     msg.logMsgToFile("file deleted in client folder: " + child);
+                    startFileDeleteTask(child.toFile());
                 } else if (event.kind() == ENTRY_MODIFY) {
                     msg.logMsgToFile("file modified in client folder: " + child);
                 }
@@ -137,6 +139,7 @@ public class WatchClientDir implements Runnable {
             UDPFileSend udpFileSend = new UDPFileSend(SyncServer.LOCALHOST.getServerName(), udpPort, fileBlock.getFile());
             Thread fileSendThread = new Thread(udpFileSend);
             try {
+                msg.printToTerminal("file uploading: " + fileBlock.getFileBlockName());
                 fileSendThread.start();
             } catch (Exception e) {
                 msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendFileToServer", e.getMessage());
@@ -156,5 +159,27 @@ public class WatchClientDir implements Runnable {
         suspendAllOperation = false;
     }
 
-
+    public void startFileDeleteTask(File fileToDelete) {
+        final String METHOD_NAME = "startFileDeleteTask";
+        Message msg;
+        String serverResponse;
+        if (!PrgUtility.isFileABlockFile(fileToDelete.getName())) {
+            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"delete", fileToDelete.getName()));
+            if (msg.isMessageSuccess()) {
+                serverResponse = msg.getMessage();
+                msg.printToTerminal("server response: " + serverResponse);
+                if (serverResponse.equalsIgnoreCase("ok")) {
+                    String fileName = fileToDelete.getName();
+                    fileToDelete.delete();
+                    msg.printToTerminal("file deleted: " + fileName);
+                } else {
+                    msg.setErrorMessage(TAG, METHOD_NAME, "ServerResponseNotOk", msg.getMessage());
+                    msg.printToTerminal(msg.getMessage());
+                }
+            }else {
+                msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendTCPRequest",msg.getMessage());
+                msg.printToTerminal(msg.getMessage());
+            }
+        }
+    }
 }

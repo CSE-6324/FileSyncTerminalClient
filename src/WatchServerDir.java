@@ -56,18 +56,14 @@ public class WatchServerDir implements Runnable {
                 Path child = dir.resolve(name);
 
                 if (child.getFileName().toString().charAt(0) == '.') {
-                    // skip hidden files
-                    continue;
+                    continue; // skip hidden files
                 }
                 if (event.kind() == ENTRY_CREATE) {
                     msg.logMsgToFile("file created in server folder: " + child);
-                    String fileName = PrgUtility.getFileNameFromFileBlockName(child.toFile().getName());
-                    if (!(new File(syncClient.getLocalFilePath(), fileName).exists())) {
-                        msg = startFileDownloadTask(child.toFile());
-                    }
+                    startFileDownloadTask(child.toFile());
                 } else if (event.kind() == ENTRY_DELETE) {
                     msg.logMsgToFile("file deleted in server folder: " + child);
-                    msg.logMsgToFile("TODO");
+                    startFileDeleteTask(child.toFile());
                 }
             }
             key.reset();
@@ -86,16 +82,18 @@ public class WatchServerDir implements Runnable {
         }
     }
 
-    public synchronized Message startFileDownloadTask(File fileBlock) {
+    public synchronized void startFileDownloadTask(File fileToDownload) {
         final String METHOD_NAME = "startFileDownloadTask";
         Message msg = new Message();
+        String fileName = PrgUtility.getFileNameFromFileBlockName(fileToDownload.getName());
         try {
-            downloadFileBlockToClient(fileBlock);
+            if (!(new File(syncClient.getLocalFilePath(), fileName).exists())) {
+                    downloadFileBlockToClient(fileToDownload);
+            }
         } catch (Exception e) {
             msg.setErrorMessage(TAG, METHOD_NAME, "UnableToDownloadFileToClient", msg.getMessage());
             msg.printToTerminal(msg.getMessage());
         }
-        return msg;
     }
 
     private synchronized void downloadFileBlockToClient(File fileBlock) {
@@ -113,7 +111,7 @@ public class WatchServerDir implements Runnable {
                 serverResponse = msg.getMessage();
                 msg.printToTerminal("server response: " + serverResponse);
                 if (serverResponse.equalsIgnoreCase("ok")) {
-
+                    msg.printToTerminal("file downloaded: " + fileBlock.getName());
                 } else {
                     msg.setErrorMessage(TAG, METHOD_NAME, "ServerDownloadRequestIsNotOK", msg.getMessage());
                     msg.printToTerminal(msg.getMessage());
@@ -134,5 +132,21 @@ public class WatchServerDir implements Runnable {
 
     public void resumeAllOperation() {
         suspendAllOperation = false;
+    }
+
+    public void startFileDeleteTask(File fileToDeleteFromServer) {
+        final String METHOD_NAME = "startFileDeleteTask";
+        Message msg = new Message();
+        String fileName = PrgUtility.getFileNameFromFileBlockName(fileToDeleteFromServer.getName());
+        try {
+            File fileToDeleteInClient = new File(syncClient.getLocalFilePath(), fileName);
+            if ((fileToDeleteInClient.exists())) {
+                fileToDeleteInClient.delete();
+                msg.printToTerminal("file deleted: " + fileName);
+            }
+        } catch (Exception e) {
+            msg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
+            msg.logMsgToFile(msg.getMessage());
+        }
     }
 }
