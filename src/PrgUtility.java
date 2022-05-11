@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -103,5 +106,15 @@ public class PrgUtility {
 
     public static void updateFileStatusUpload(String fileName, String status) {
         FileSyncClientApp.fileStatus.setFileStatus(fileName, "delete " + status);
+    }
+
+    public static boolean hasValidUTFChars(byte[] bArray) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+        try {
+            decoder.decode(ByteBuffer.wrap(bArray));
+        } catch (CharacterCodingException ex) {
+            return false;
+        }
+        return true;
     }
 }

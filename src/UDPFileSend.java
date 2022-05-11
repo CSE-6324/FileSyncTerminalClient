@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Credit: https://gist.github.com/absalomhr/ce11c2e43df517b2571b1dfc9bc9b487
@@ -35,14 +36,13 @@ public class UDPFileSend implements Runnable {
         try (DatagramSocket socket = new DatagramSocket();){
             InetAddress address = InetAddress.getByName(host);
             String fileName = fileToSend.getName();
-            if (PrgUtility.isFileNameValid(fileName) && PrgUtility.hasFileExtension(fileName)) {
+            if (PrgUtility.isFileNameValid(fileName) && PrgUtility.hasFileExtension(fileName) && PrgUtility.hasValidUTFChars(fileName.getBytes(StandardCharsets.UTF_8))) {
                 byte[] fileNameBytes = fileName.getBytes();
                 DatagramPacket fileStatPacket = new DatagramPacket(fileNameBytes, fileNameBytes.length, address, port);
                 socket.send(fileStatPacket);
                 byte[] fileByteArray = readFileToByteArray(fileToSend);
                 sendFile(socket, fileByteArray, address, port);
             }
-
         } catch (Exception ex) {
             commMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", ex.getMessage());
             commMsg.printToTerminal(commMsg.getMessage());
@@ -58,7 +58,7 @@ public class UDPFileSend implements Runnable {
         int ackSeq = 0; // to see if the datagram was received correctly
         int bytesUploaded = 0;
         PrgUtility.updateFileStatusBytesUpload(this.fileToSend.getName(), bytesUploaded, fileByteArray.length);
-        int srcPos, destPost, len;
+        int srcPos = 0, destPost = 0, len = 0;
         for (int i = 0; i < fileByteArray.length; i = i + 1021) {
             seqNumber += 1;
 
@@ -74,7 +74,6 @@ public class UDPFileSend implements Runnable {
                 eofFlag = false;
                 message[2] = (byte) (0); // we haven't reached the end of the file, still sending datagrams
             }
-
 
             if (!eofFlag) {
                 srcPos = i;

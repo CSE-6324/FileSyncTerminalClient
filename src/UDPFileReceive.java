@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Credit: https://gist.github.com/absalomhr/ce11c2e43df517b2571b1dfc9bc9b487
@@ -27,17 +28,18 @@ public class UDPFileReceive implements Runnable {
             byte[] receiveFileName = new byte[1024]; // where we store the data of datagram
             DatagramPacket receiveFileNamePacket = new DatagramPacket(receiveFileName, receiveFileName.length);
             socket.receive(receiveFileNamePacket);
-            msg.logMsgToFile("receiving file name: ");
             byte[] data = receiveFileNamePacket.getData();
             String fileName = new String(data, 0, receiveFileNamePacket.getLength());
             String[] fileNameTokens = fileName.split("/");
             fileName = fileNameTokens[fileNameTokens.length-1];
 
-            msg.logMsgToFile("creating file: " + fileName);
-            File file = new File(this.fileReceiveFolder + "/" + fileName);
-            FileOutputStream outToFile = new FileOutputStream(file);
+            if (PrgUtility.isFileNameValid(fileName) && PrgUtility.hasFileExtension(fileName) && PrgUtility.hasValidUTFChars(fileName.getBytes(StandardCharsets.UTF_8))) {
+                msg.logMsgToFile("creating file: " + fileName);
+                File file = new File(this.fileReceiveFolder + "/" + fileName);
+                FileOutputStream outToFile = new FileOutputStream(file);
 
-            receiveFile(outToFile, socket);
+                receiveFile(outToFile, socket);
+            }
         } catch (Exception ex) {
             msg.setErrorMessage(TAG, METHOD_NAME, "Exception",  ex.getMessage());
             msg.printToTerminal(msg.getMessage());

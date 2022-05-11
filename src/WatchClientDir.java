@@ -84,6 +84,7 @@ public class WatchClientDir implements Runnable {
                     startFileDeleteTask(child.toFile());
                 } else if (event.kind() == ENTRY_MODIFY) {
                     msg.logMsgToFile("file modified in client folder: " + child);
+                    startFileEditTask(child.toFile());
                 }
             }
             key.reset();
@@ -117,7 +118,6 @@ public class WatchClientDir implements Runnable {
                     PrgUtility.updateFileStatusBlockUpload(newFile.getName(), blockUploadedCount, fileToSync.getFileBlockList().size());
                     blockUploadedCount++;
                 }
-                //msg.printToTerminal(fileBlocksUploaded);
                 PrgUtility.updateFileStatusBlockCheckSum(newFile.getName() + "-checksums" + System.lineSeparator(), fileBlocksUploaded);
             } else {
                 msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGenerateFileBlocksAndCheckSum", msg.getMessage());
@@ -183,6 +183,20 @@ public class WatchClientDir implements Runnable {
                 msg.setErrorMessage(TAG, METHOD_NAME, "UnableToSendTCPRequest",msg.getMessage());
                 msg.printToTerminal(msg.getMessage());
             }
+        }
+    }
+
+    public void startFileEditTask(File fileToDeltaSync) {
+        final String METHOD_NAME = "startFileEditTask";
+        Message msg;
+        String serverResponse;
+        ArrayList<FileBlock> deltaSyncFileBlocks = new ArrayList<>();
+        msg = syncClient.getFileBlocksToUploadForDeltaSync(deltaSyncFileBlocks);
+        if (msg.isMessageSuccess()) {
+            msg.printToTerminal("file block for delta sync: " + deltaSyncFileBlocks.get(0).getFileBlockName());
+        } else {
+            msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGetFileBlocksForDeltaSync");
+            msg.printToTerminal(msg.getMessage());
         }
     }
 }
