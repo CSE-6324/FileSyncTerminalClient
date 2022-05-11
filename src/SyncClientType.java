@@ -87,6 +87,16 @@ public enum SyncClientType {
         return otherClientFileNames;
     }
 
+    public boolean isFileInOtherClients(String fileName) {
+        ArrayList<String> otherClientFileNames = getOtherClientFileNames();
+        for (String otherClientFileName: otherClientFileNames) {
+            if (otherClientFileName.equalsIgnoreCase(fileName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<String> getFileNamesToUpload() {
         return getNotSyncedFilesByClient();
     }
@@ -215,12 +225,13 @@ public enum SyncClientType {
     public void mergeFileBlocks(String fileName, ArrayList<String> fileBlockNameList) throws IOException {
         HashMap<Integer, File> orderedFileBlocks = new HashMap<>();
         Message msg = new Message();
-        int keyIndx = 0;
+        int keyIndx = 1;
         Collections.sort(fileBlockNameList);
         for (String fileBlockName: fileBlockNameList) {
             msg.printToTerminal(fileBlockName);
             orderedFileBlocks.put(keyIndx, new File(localFilePath + "/" + fileBlockName));
-            keyIndx += 1;
+            keyIndx++;
+
         }
         File mergedFile = new File(localFilePath + "/" + fileName);
         FileMerger fileMerger = new FileMerger(mergedFile, orderedFileBlocks);

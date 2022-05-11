@@ -100,13 +100,15 @@ public class WatchServerDir implements Runnable {
         final String METHOD_NAME = "downloadFileBlockToClient";
         Message msg = new Message();
         String serverResponse;
+        String serverRequest;
         try {
             int udpPort = tcpClientSocketConn.getFreeLocalPort();
             UDPFileReceive udpFileReceive = new UDPFileReceive(udpPort, syncClient.getLocalFilePath());
             Thread fileReceiveThread = new Thread(udpFileReceive);
             fileReceiveThread.start();
-
-            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(), "download", "udp_port", fileBlock.getName(), (udpPort + "")));
+            serverRequest = tcpClientSocketConn.tcpRequest(syncClient.getClientName(), "download", "udp_port", fileBlock.getName(), (udpPort + ""));
+            msg.logMsgToFile(serverRequest);
+            msg = tcpClientSocketConn.sendRequest(serverRequest);
             if (msg.isMessageSuccess()) {
                 serverResponse = msg.getMessage();
                 msg.printToTerminal("server response: " + serverResponse);

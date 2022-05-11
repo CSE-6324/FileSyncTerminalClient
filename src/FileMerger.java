@@ -14,12 +14,13 @@ public class FileMerger {
 
     public void mergeFiles() throws IOException {
         FileOutputStream outputStream = new FileOutputStream(destination, true);
-        for (int key = 0; key < sources.size(); key++) {
+        for (int key = 1; key <= sources.size(); key++) {
             FileInputStream fileInputStream = new FileInputStream(sources.get(key));
             outputStream.write(fileInputStream.readAllBytes());
             fileInputStream.close();
         }
         outputStream.close();
+
     }
 
     public int getTotalFileSize() {
@@ -47,7 +48,7 @@ public class FileMerger {
     }
 
     public void deleteMergedSources() {
-        for (int key = 0; key < sources.size(); key++) {
+        for (int key = 1; key <= sources.size(); key++) {
             sources.get(key).delete();
         }
     }

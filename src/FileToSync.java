@@ -76,7 +76,7 @@ public class FileToSync {
         int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_2_KB;
         byte[] buffer = new byte[fileBlockSize];
         String fileName = file.getName();
-        int bytesRead = -1;
+        int bytesRead;
         try(FileInputStream fileInputStream = new FileInputStream(file);
             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
         ) {
@@ -86,9 +86,15 @@ public class FileToSync {
                 File newFile = new File(PrgUtility.CLIENT_FILE_BLOCKS_PATH, fileBlockName);
                 try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
                     fileOutputStream.write(buffer, 0, bytesRead);
+                    fileOutputStream.flush();
+
+                    buffer = new byte[fileBlockSize];
+                    bytesRead = bufferedInputStream.read(buffer);
+                    fileBlockList.add(new FileBlock(blockNum, newFile));
+                } catch (Exception e) {
+                    returnMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
+                    returnMsg.printToTerminal(returnMsg.getMessage());
                 }
-                fileBlockList.add(new FileBlock(blockNum, newFile));
-                bytesRead = bufferedInputStream.read(buffer);
             }
         } catch (IOException e) {
             returnMsg.setMessageSuccess(false);

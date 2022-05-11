@@ -66,10 +66,9 @@ public class WatchClientDir implements Runnable {
                 if (event.kind() == ENTRY_CREATE) {
                     msg.logMsgToFile("file created in client folder: " + child);
                     String fileName = child.toFile().getName();
-                    if (!PrgUtility.isFileABlockFile(fileName)) {
+                    if (!(PrgUtility.isFileABlockFile(fileName)) && !(syncClient.isFileInOtherClients(fileName))) {
                         startFileUploadTask(child.toFile());
-                    }
-                    else if (PrgUtility.isFileABlockFile(fileName)){
+                    } else if (PrgUtility.isFileABlockFile(fileName)) {
                         fileName = PrgUtility.getFileNameFromFileBlockName(fileName);
                         ArrayList<String> fileBlockNameListInServer = SyncServer.LOCALHOST.getAllFileBlockNamesByFileName(fileName);
                         ArrayList<String> fileBlockNameListInClient = syncClient.getAllFileBlockNamesByFileName(fileName);
@@ -84,7 +83,7 @@ public class WatchClientDir implements Runnable {
                     startFileDeleteTask(child.toFile());
                 } else if (event.kind() == ENTRY_MODIFY) {
                     msg.logMsgToFile("file modified in client folder: " + child);
-                    startFileEditTask(child.toFile());
+                    startDeltaSyncTask(child.toFile());
                 }
             }
             key.reset();
@@ -131,9 +130,11 @@ public class WatchClientDir implements Runnable {
 
     private synchronized void uploadFileBlockToServer(FileBlock fileBlock) {
         final String METHOD_NAME = "uploadFileBlockToServer";
-        Message msg;
+        Message msg = new Message();
         String serverResponse;
-        msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", fileBlock.getFileBlockName()));
+        String serverRequest = tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"upload", fileBlock.getFileBlockName());
+        msg.logMsgToFile(serverRequest);
+        msg = tcpClientSocketConn.sendRequest(serverRequest);
         if (msg.isMessageSuccess()) {
             serverResponse = msg.getMessage();
             msg.printToTerminal("server response: " + serverResponse);
@@ -164,10 +165,12 @@ public class WatchClientDir implements Runnable {
 
     public void startFileDeleteTask(File fileToDelete) {
         final String METHOD_NAME = "startFileDeleteTask";
-        Message msg;
+        Message msg = new Message();
         String serverResponse;
         if (!PrgUtility.isFileABlockFile(fileToDelete.getName())) {
-            msg = tcpClientSocketConn.sendRequest(tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"delete", fileToDelete.getName()));
+            String serverRequest = tcpClientSocketConn.tcpRequest(syncClient.getClientName(),"delete", fileToDelete.getName());
+            msg.logMsgToFile(serverRequest);
+            msg = tcpClientSocketConn.sendRequest(serverRequest);
             if (msg.isMessageSuccess()) {
                 serverResponse = msg.getMessage();
                 msg.printToTerminal("server response: " + serverResponse);
@@ -186,14 +189,18 @@ public class WatchClientDir implements Runnable {
         }
     }
 
-    public void startFileEditTask(File fileToDeltaSync) {
+    public void startDeltaSyncTask(File fileToDeltaSync) {
         final String METHOD_NAME = "startFileEditTask";
         Message msg;
         String serverResponse;
         ArrayList<FileBlock> deltaSyncFileBlocks = new ArrayList<>();
         msg = syncClient.getFileBlocksToUploadForDeltaSync(deltaSyncFileBlocks);
         if (msg.isMessageSuccess()) {
-            msg.printToTerminal("file block for delta sync: " + deltaSyncFileBlocks.get(0).getFileBlockName());
+            for (FileBlock fileBlock: deltaSyncFileBlocks) {
+                msg.printToTerminal("start delta sync: " + fileBlock.getFileBlockName());
+                uploadFileBlockToServer(fileBlock);
+                PrgUtility.updateFileStatusDeltaSync(fileBlock.getFileBlockName(), "done");
+            }
         } else {
             msg.setErrorMessage(TAG, METHOD_NAME, "UnableToGetFileBlocksForDeltaSync");
             msg.printToTerminal(msg.getMessage());

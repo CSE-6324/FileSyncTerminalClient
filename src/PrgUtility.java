@@ -117,4 +117,8 @@ public class PrgUtility {
         }
         return true;
     }
+
+    public static void updateFileStatusDeltaSync(String fileName, String status) {
+        FileSyncClientApp.fileStatus.setFileStatus(fileName, "delta sync " + status);
+    }
 }
