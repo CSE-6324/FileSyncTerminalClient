@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FileMerger {
@@ -13,14 +14,20 @@ public class FileMerger {
 
 
     public void mergeFiles() throws IOException {
-        FileOutputStream outputStream = new FileOutputStream(destination, true);
+        FileOutputStream outputStream = new FileOutputStream(destination);
         for (int key = 1; key <= sources.size(); key++) {
-            FileInputStream fileInputStream = new FileInputStream(sources.get(key));
-            outputStream.write(fileInputStream.readAllBytes());
-            fileInputStream.close();
+            byte[] fileByteArray = readFileToByteArray(sources.get(key));
+            String fileName = sources.get(key).getName();
+            for (int idx = 0; idx < fileByteArray.length; idx++) {
+                byte singleFileByte = fileByteArray[idx];
+                if (PrgUtility.isExtensionTxt(fileName) && !(singleFileByte == (byte) 0)) {
+                    outputStream.write(singleFileByte);
+                } else if (!PrgUtility.isExtensionTxt(fileName)){
+                    outputStream.write(singleFileByte);
+                }
+            }
         }
         outputStream.close();
-
     }
 
     public int getTotalFileSize() {

@@ -121,4 +121,12 @@ public class PrgUtility {
     public static void updateFileStatusDeltaSync(String fileName, String status) {
         FileSyncClientApp.fileStatus.setFileStatus(fileName, "delta sync " + status);
     }
+
+    public static boolean isExtensionTxt(String fileName) {
+        if (isFileNameValid(fileName) && hasFileExtension(fileName) && hasValidUTFChars(fileName.getBytes(StandardCharsets.UTF_8))) {
+            return  fileName.split("\\.")[1].equalsIgnoreCase("txt");
+        } else {
+            return false;
+        }
+    }
 }

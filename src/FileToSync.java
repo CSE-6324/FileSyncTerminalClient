@@ -85,10 +85,12 @@ public class FileToSync {
                 String fileBlockName = getBlockName(fileName, ++blockNum);
                 File newFile = new File(PrgUtility.CLIENT_FILE_BLOCKS_PATH, fileBlockName);
                 try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
+                    if (bytesRead < buffer.length){
+                        buffer = new byte[bytesRead+1];
+                    }
                     fileOutputStream.write(buffer, 0, bytesRead);
                     fileOutputStream.flush();
 
-                    buffer = new byte[fileBlockSize];
                     bytesRead = bufferedInputStream.read(buffer);
                     fileBlockList.add(new FileBlock(blockNum, newFile));
                 } catch (Exception e) {
