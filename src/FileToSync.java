@@ -15,22 +15,27 @@ public class FileToSync {
         fileBlockList = new ArrayList<>();
     }
 
+    public FileToSync(String fileToSyncPath) {
+        fileToSync = new File(fileToSyncPath);
+        fileBlockList = new ArrayList<>();
+    }
+
     public Message generateFileBlocks() {
         final String METHOD_NAME = "generateFileBlocks";
-        Message returnMsg = FileUtility.getFileBlocks(this.fileToSync, this.fileBlockList);
-        if (!returnMsg.isMessageSuccess()) {
-            returnMsg.setMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+        Message returnMsg = getFileBlocks(this.fileToSync, this.fileBlockList);
+        if (!returnMsg.isMessageSuccess()){
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
         }
         return returnMsg;
     }
 
     public Message generateFileBlockCheckSums() {
         final String METHOD_NAME = "generateFileBlockCheckSums";
-        Message returnMsg = new Message("", true);
+        Message returnMsg = new Message();
         for (FileBlock fb : fileBlockList) {
             returnMsg = fb.generateCheckSum();
             if (!returnMsg.isMessageSuccess()) {
-                returnMsg.setMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
                 break;
             }
         }
@@ -51,14 +56,80 @@ public class FileToSync {
 
     public Message deleteAllFileBlocks() {
         final String METHOD_NAME = "deleteAllFileBlocks";
-        Message returnMsg = new Message("", true);
+        Message returnMsg = new Message();
         for (FileBlock fb: this.fileBlockList) {
             if (!fb.deleteFileBlock()) {
                 returnMsg.setMessageSuccess(false);
-                returnMsg.setMessage(TAG, METHOD_NAME, "Unable to delete file block: " + fb.getFileBlockName());
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, "Unable to delete file block: " + fb.getFileBlockName());
                 break;
             }
         }
+        this.fileBlockList.clear();
         return returnMsg;
+    }
+
+    private Message getFileBlocks(File file, ArrayList<FileBlock> fileBlockList) {
+        final String METHOD_NAME = "getFileBlocks";
+        Message returnMsg = new Message();
+        int blockNum = 0;
+//        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_4_MB;
+        int fileBlockSize = PrgUtility.FILE_BLOCK_SIZE_2_KB;
+        byte[] buffer = new byte[fileBlockSize];
+        String fileName = file.getName();
+        int bytesRead;
+        try(FileInputStream fileInputStream = new FileInputStream(file);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+        ) {
+            bytesRead = bufferedInputStream.read(buffer);
+            while (bytesRead > 0) {
+                String fileBlockName = getBlockName(fileName, ++blockNum);
+                File newFile = new File(PrgUtility.CLIENT_FILE_BLOCKS_PATH, fileBlockName);
+                try (FileOutputStream fileOutputStream = new FileOutputStream(newFile)) {
+                    if (bytesRead < buffer.length){
+                        buffer = new byte[bytesRead+1];
+                    }
+                    fileOutputStream.write(buffer, 0, bytesRead);
+                    fileOutputStream.flush();
+
+                    bytesRead = bufferedInputStream.read(buffer);
+                    fileBlockList.add(new FileBlock(blockNum, newFile));
+                } catch (Exception e) {
+                    returnMsg.setErrorMessage(TAG, METHOD_NAME, "Exception", e.getMessage());
+                    returnMsg.printToTerminal(returnMsg.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            returnMsg.setMessageSuccess(false);
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, "(IOException) " + e.getMessage());
+        }
+        return returnMsg;
+    }
+
+    private String getBlockName(String originalFileName, int blockNum) {
+        String filePartName = "";
+        String[] fileNameTokens = originalFileName.split("\\.");
+        String fileNameWithoutExt = fileNameTokens[0];
+        String extName = fileNameTokens[1];
+        filePartName = String.format("%s_%03d", fileNameWithoutExt, blockNum);
+        filePartName += "." + extName;
+        return filePartName;
+    }
+
+    public Message generateFileBlocksAndCheckSums() {
+        final String METHOD_NAME = "generateFileBlocksAndCheckSums";
+        Message returnMsg = generateFileBlocks();
+        if (returnMsg.isMessageSuccess()) {
+            returnMsg = generateFileBlockCheckSums();
+            if (!returnMsg.isMessageSuccess()) {
+                returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+            }
+        } else {
+            returnMsg.setErrorMessage(TAG, METHOD_NAME, returnMsg.getMessage());
+        }
+        return returnMsg;
+    }
+
+    public void addFileBlock(FileBlock fileBlock) {
+        this.fileBlockList.add(fileBlock);
     }
 }
